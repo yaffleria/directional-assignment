@@ -15,8 +15,7 @@ export const postSchema = z.object({
           val.includes(word)
         ),
       {
-        message:
-          "Content contains forbidden words (캄보디아, 프놈펜, 불법체류, 텔레그램)",
+        message: "Content contains forbidden words",
       }
     ),
   category: z.enum(["NOTICE", "QNA", "FREE"]),
