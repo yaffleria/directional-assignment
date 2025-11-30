@@ -118,13 +118,13 @@ test.describe("New Post E2E Test", () => {
   });
 });
 
-// Data generation test - creates 100 posts
+// Data generation test - creates 10 posts
 test.describe("Generate Sample Data", () => {
   test.beforeAll(async () => {
-    console.log("Starting to generate 100 sample posts...");
+    console.log("Starting to generate 10 sample posts...");
   });
 
-  test("create 100 sample posts", async ({ page }) => {
+  test("create 10 sample posts", async ({ page }) => {
     // Set longer timeout for this test (10 minutes)
     test.setTimeout(600000);
 
@@ -135,11 +135,11 @@ test.describe("Generate Sample Data", () => {
     await page.click('button[type="submit"]');
     await page.waitForURL("/posts", { timeout: 10000 });
 
-    // Create 100 posts
-    for (let i = 0; i < 100; i++) {
+    // Create 10 posts
+    for (let i = 0; i < 10; i++) {
       const postData = generatePostData(i);
 
-      console.log(`Creating post ${i + 1}/100: ${postData.title}`);
+      console.log(`Creating post ${i + 1}/10: ${postData.title}`);
 
       try {
         // Navigate to new post page
@@ -178,6 +178,6 @@ test.describe("Generate Sample Data", () => {
       }
     }
 
-    console.log("✅ Successfully created 100 sample posts!");
+    console.log("✅ Successfully created 10 sample posts!");
   });
 });
