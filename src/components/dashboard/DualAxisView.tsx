@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -39,6 +40,25 @@ export const DualAxisView = ({
   handleColorChange,
   COLORS,
 }: DualAxisViewProps) => {
+  const [hoveredTeam, setHoveredTeam] = useState<string | null>(null);
+
+  const handleLineHover = (dataKey: string) => {
+    let teamName = "";
+    if (dataKey.includes(" Bugs")) teamName = dataKey.replace(" Bugs", "");
+    else if (dataKey.includes(" Productivity"))
+      teamName = dataKey.replace(" Productivity", "");
+    else if (dataKey.includes(" Meetings"))
+      teamName = dataKey.replace(" Meetings", "");
+    else if (dataKey.includes(" Morale"))
+      teamName = dataKey.replace(" Morale", "");
+
+    setHoveredTeam(teamName);
+  };
+
+  const handleLineLeave = () => {
+    setHoveredTeam(null);
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-card rounded-lg border p-6 shadow-sm">
@@ -46,7 +66,7 @@ export const DualAxisView = ({
           Coffee Consumption vs Bugs & Productivity
         </h3>
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={coffeeChartData}>
+          <LineChart data={coffeeChartData} onMouseLeave={handleLineLeave}>
             <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
             <XAxis
               dataKey="cups"
@@ -75,8 +95,14 @@ export const DualAxisView = ({
               }}
             />
             <Tooltip
-              content={<CustomDualAxisTooltip xAxisLabel="Cups" />}
-              shared={false}
+              content={
+                <CustomDualAxisTooltip
+                  xAxisLabel="Cups"
+                  hoveredTeam={hoveredTeam}
+                />
+              }
+              shared={true}
+              trigger="hover"
             />
             <Legend
               content={
@@ -97,7 +123,7 @@ export const DualAxisView = ({
                 dataKey={`${team.team} Bugs`}
                 name={`${team.team} Bugs`}
                 stroke={customColors[`${team.team} Bugs`] || COLORS.primary[i]}
-                strokeWidth={2}
+                strokeWidth={hoveredTeam === team.team ? 3 : 2}
                 hide={hiddenSeries.has(`${team.team} Bugs`)}
                 dot={{
                   r: 4,
@@ -105,6 +131,8 @@ export const DualAxisView = ({
                 }}
                 activeDot={{ r: 6 }}
                 isAnimationActive={false}
+                onMouseEnter={() => handleLineHover(`${team.team} Bugs`)}
+                onMouseLeave={handleLineLeave}
               />
             ))}
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -118,7 +146,7 @@ export const DualAxisView = ({
                 stroke={
                   customColors[`${team.team} Productivity`] || COLORS.primary[i]
                 }
-                strokeWidth={2}
+                strokeWidth={hoveredTeam === team.team ? 3 : 2}
                 strokeDasharray="5 5"
                 hide={hiddenSeries.has(`${team.team} Productivity`)}
                 dot={
@@ -131,6 +159,10 @@ export const DualAxisView = ({
                 }
                 activeDot={{ r: 6 }}
                 isAnimationActive={false}
+                onMouseEnter={() =>
+                  handleLineHover(`${team.team} Productivity`)
+                }
+                onMouseLeave={handleLineLeave}
               />
             ))}
           </LineChart>
@@ -141,7 +173,7 @@ export const DualAxisView = ({
           Snack Impact on Meetings & Morale
         </h3>
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={snackChartData}>
+          <LineChart data={snackChartData} onMouseLeave={handleLineLeave}>
             <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
             <XAxis
               dataKey="snacks"
@@ -170,8 +202,14 @@ export const DualAxisView = ({
               }}
             />
             <Tooltip
-              content={<CustomDualAxisTooltip xAxisLabel="Snacks" />}
-              shared={false}
+              content={
+                <CustomDualAxisTooltip
+                  xAxisLabel="Snacks"
+                  hoveredTeam={hoveredTeam}
+                />
+              }
+              shared={true}
+              trigger="hover"
             />
             <Legend
               content={
@@ -194,7 +232,7 @@ export const DualAxisView = ({
                 stroke={
                   customColors[`${dept.name} Meetings`] || COLORS.primary[i]
                 }
-                strokeWidth={2}
+                strokeWidth={hoveredTeam === dept.name ? 3 : 2}
                 hide={hiddenSeries.has(`${dept.name} Meetings`)}
                 dot={{
                   r: 4,
@@ -202,6 +240,8 @@ export const DualAxisView = ({
                     customColors[`${dept.name} Meetings`] || COLORS.primary[i],
                 }}
                 activeDot={{ r: 6 }}
+                onMouseEnter={() => handleLineHover(`${dept.name} Meetings`)}
+                onMouseLeave={handleLineLeave}
               />
             ))}
             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -215,7 +255,7 @@ export const DualAxisView = ({
                 stroke={
                   customColors[`${dept.name} Morale`] || COLORS.primary[i]
                 }
-                strokeWidth={2}
+                strokeWidth={hoveredTeam === dept.name ? 3 : 2}
                 strokeDasharray="5 5"
                 hide={hiddenSeries.has(`${dept.name} Morale`)}
                 dot={
@@ -226,6 +266,8 @@ export const DualAxisView = ({
                   />
                 }
                 activeDot={{ r: 6 }}
+                onMouseEnter={() => handleLineHover(`${dept.name} Morale`)}
+                onMouseLeave={handleLineLeave}
               />
             ))}
           </LineChart>
