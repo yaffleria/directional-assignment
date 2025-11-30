@@ -84,19 +84,37 @@ test.describe("Chart Interactions", () => {
     const chartArea = card.locator(".recharts-wrapper");
     await expect(chartArea).toBeVisible();
 
-    // Hover over the chart area
-    // We try to hover over the center of the chart
-    const box = await chartArea.boundingBox();
-    if (box) {
-      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    // Hover over a specific data point (dot)
+    // Since shared={false}, we must hover over the dot or line.
+    // Recharts renders dots with class 'recharts-dot'
+    const dots = card.locator(".recharts-dot");
+    try {
+      await dots.first().waitFor({ state: "visible", timeout: 5000 });
+    } catch (e) {
+      console.log("Dots not found or not visible");
     }
+
+    const dotCount = await dots.count();
+    console.log(`Found ${dotCount} dots`);
+    expect(dotCount).toBeGreaterThan(0);
 
     // Verify tooltip appears
     const tooltip = page.locator(".recharts-tooltip-wrapper");
+
+    // Hover over the 2nd dot (index 1) - likely Frontend's 2nd point
+    const dotToHover = dots.nth(1);
+    await dotToHover.hover({ force: true });
     await expect(tooltip).toBeVisible();
 
-    // Verify tooltip content
-    await expect(tooltip).toContainText("Bugs");
-    await expect(tooltip).toContainText("Productivity");
+    // Hover over a dot from a different series (Backend)
+    // Assuming 5 points per series, index 5 should be the first dot of the second series.
+    const backendDot = dots.nth(5);
+    await backendDot.hover({ force: true });
+
+    const backendTooltipText = await tooltip.textContent();
+    console.log("Backend Tooltip text:", backendTooltipText);
+
+    expect(backendTooltipText).toContain("Backend");
+    expect(backendTooltipText).not.toContain("Frontend");
   });
 });
