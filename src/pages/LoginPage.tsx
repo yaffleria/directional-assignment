@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api, setAuthToken } from "../api/client";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { AxiosError } from "axios";
 import { AuthLayout } from "../components/layout/AuthLayout/AuthLayout";
@@ -44,17 +44,7 @@ export default function LoginPage() {
   return (
     <AuthLayout
       title="Sign in to your account"
-      description={
-        <>
-          Or{" "}
-          <Link
-            to="/signup"
-            className="font-medium text-primary hover:text-primary/90"
-          >
-            create a new account
-          </Link>
-        </>
-      }
+      description="Enter your email and password to access your account"
     >
       <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">

@@ -119,7 +119,7 @@ pnpm lint
 
 ### 1. 인증 시스템
 
-- ✅ 로그인/회원가입 페이지
+- ✅ 로그인 페이지
 - ✅ JWT 토큰 기반 인증
 - ✅ Protected Routes (인증 필요 페이지)
 - ✅ 자동 로그아웃 기능
@@ -221,14 +221,14 @@ directional-assignment/
 │   ├── pages/                   # 페이지 컴포넌트
 │   │   ├── DashboardPage.tsx    # 대시보드 (차트)
 │   │   ├── LoginPage.tsx        # 로그인
-│   │   ├── SignupPage.tsx       # 회원가입
+│
 │   │   ├── PostsListPage.tsx    # 게시글 목록
 │   │   ├── PostDetailPage.tsx   # 게시글 상세
 │   │   └── PostFormPage.tsx     # 게시글 작성/수정
 │   │
 │   ├── schema/                  # Zod 스키마
 │   │   ├── login.schema.ts
-│   │   ├── signup.schema.ts
+│
 │   │   └── posts.schema.ts
 │   │
 │   ├── App.tsx                  # 앱 라우팅

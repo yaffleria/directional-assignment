@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
 import PostsListPage from "./pages/PostsListPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import PostFormPage from "./pages/PostFormPage";
@@ -12,7 +11,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/posts" element={<PostsListPage />} />
