@@ -103,6 +103,7 @@ export const DualAxisView = ({
               }
               shared={true}
               trigger="hover"
+              isAnimationActive={false}
             />
             <Legend
               content={
@@ -123,13 +124,13 @@ export const DualAxisView = ({
                 dataKey={`${team.team} Bugs`}
                 name={`${team.team} Bugs`}
                 stroke={customColors[`${team.team} Bugs`] || COLORS.primary[i]}
-                strokeWidth={hoveredTeam === team.team ? 3 : 2}
+                strokeWidth={hoveredTeam === team.team ? 5 : 3}
                 hide={hiddenSeries.has(`${team.team} Bugs`)}
                 dot={{
                   r: 4,
                   fill: customColors[`${team.team} Bugs`] || COLORS.primary[i],
                 }}
-                activeDot={{ r: 6 }}
+                activeDot={{ r: 8 }}
                 isAnimationActive={false}
                 onMouseEnter={() => handleLineHover(`${team.team} Bugs`)}
                 onMouseLeave={handleLineLeave}
@@ -146,7 +147,7 @@ export const DualAxisView = ({
                 stroke={
                   customColors[`${team.team} Productivity`] || COLORS.primary[i]
                 }
-                strokeWidth={hoveredTeam === team.team ? 3 : 2}
+                strokeWidth={hoveredTeam === team.team ? 5 : 3}
                 strokeDasharray="5 5"
                 hide={hiddenSeries.has(`${team.team} Productivity`)}
                 dot={
@@ -157,7 +158,7 @@ export const DualAxisView = ({
                     }
                   />
                 }
-                activeDot={{ r: 6 }}
+                activeDot={{ r: 8 }}
                 isAnimationActive={false}
                 onMouseEnter={() =>
                   handleLineHover(`${team.team} Productivity`)
@@ -210,6 +211,7 @@ export const DualAxisView = ({
               }
               shared={true}
               trigger="hover"
+              isAnimationActive={false}
             />
             <Legend
               content={
@@ -232,14 +234,14 @@ export const DualAxisView = ({
                 stroke={
                   customColors[`${dept.name} Meetings`] || COLORS.primary[i]
                 }
-                strokeWidth={hoveredTeam === dept.name ? 3 : 2}
+                strokeWidth={hoveredTeam === dept.name ? 5 : 3}
                 hide={hiddenSeries.has(`${dept.name} Meetings`)}
                 dot={{
                   r: 4,
                   fill:
                     customColors[`${dept.name} Meetings`] || COLORS.primary[i],
                 }}
-                activeDot={{ r: 6 }}
+                activeDot={{ r: 8 }}
                 onMouseEnter={() => handleLineHover(`${dept.name} Meetings`)}
                 onMouseLeave={handleLineLeave}
               />
@@ -255,7 +257,7 @@ export const DualAxisView = ({
                 stroke={
                   customColors[`${dept.name} Morale`] || COLORS.primary[i]
                 }
-                strokeWidth={hoveredTeam === dept.name ? 3 : 2}
+                strokeWidth={hoveredTeam === dept.name ? 5 : 3}
                 strokeDasharray="5 5"
                 hide={hiddenSeries.has(`${dept.name} Morale`)}
                 dot={
@@ -265,7 +267,7 @@ export const DualAxisView = ({
                     }
                   />
                 }
-                activeDot={{ r: 6 }}
+                activeDot={{ r: 8 }}
                 onMouseEnter={() => handleLineHover(`${dept.name} Morale`)}
                 onMouseLeave={handleLineLeave}
               />
