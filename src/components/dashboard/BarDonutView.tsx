@@ -62,6 +62,7 @@ export const BarDonutView = ({
                 fill={customColors["popularity"] || COLORS.primary[0]}
                 name="Popularity"
                 hide={hiddenSeries.has("Popularity")}
+                isAnimationActive={false}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -134,6 +135,7 @@ export const BarDonutView = ({
                 fill={customColors["share"] || COLORS.primary[1]}
                 name="Share"
                 hide={hiddenSeries.has("Share")}
+                isAnimationActive={false}
               />
             </BarChart>
           </ResponsiveContainer>

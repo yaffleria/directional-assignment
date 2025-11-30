@@ -75,6 +75,7 @@ export const StackedView = ({
                   }
                   fillOpacity={0.6}
                   hide={hiddenSeries.has(key)}
+                  isAnimationActive={false}
                 />
               ))}
             </AreaChart>
@@ -109,6 +110,7 @@ export const StackedView = ({
                     COLORS.mood[key as keyof typeof COLORS.mood]
                   }
                   hide={hiddenSeries.has(key)}
+                  isAnimationActive={false}
                 />
               ))}
             </BarChart>
@@ -153,6 +155,7 @@ export const StackedView = ({
                   }
                   fillOpacity={0.6}
                   hide={hiddenSeries.has(key)}
+                  isAnimationActive={false}
                 />
               ))}
             </AreaChart>
@@ -187,6 +190,7 @@ export const StackedView = ({
                     COLORS.workout[key as keyof typeof COLORS.workout]
                   }
                   hide={hiddenSeries.has(key)}
+                  isAnimationActive={false}
                 />
               ))}
             </BarChart>
