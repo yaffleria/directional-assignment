@@ -1,13 +1,16 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/client";
 import { Button } from "../components/ui/Button";
+import { LoadingPage } from "../components/ui/LoadingSpinner";
+import { CategoryBadge } from "../components/ui/CategoryBadge";
+import { useDeletePost } from "../hooks/useDeletePost";
+import { formatDateTime } from "../lib/date";
 import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 
 export default function PostDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const { data: post, isLoading } = useQuery({
     queryKey: ["post", id],
@@ -19,29 +22,12 @@ export default function PostDetailPage() {
     enabled: !!id,
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: () => {
-      if (!id) throw new Error("No post ID");
-      return api.posts.postsDelete2(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      navigate("/posts");
-    },
+  const { handleDelete, isPending: isDeleting } = useDeletePost({
+    redirectTo: "/posts",
   });
 
-  const handleDelete = async () => {
-    if (confirm("Are you sure you want to delete this post?")) {
-      await deleteMutation.mutateAsync();
-    }
-  };
-
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-      </div>
-    );
+    return <LoadingPage />;
   }
 
   if (!post) {
@@ -79,8 +65,8 @@ export default function PostDetailPage() {
             </Button>
             <Button
               variant="destructive"
-              onClick={handleDelete}
-              disabled={deleteMutation.isPending}
+              onClick={() => id && handleDelete(id)}
+              disabled={isDeleting}
               className="flex items-center gap-2"
             >
               <Trash2 size={16} />
@@ -94,25 +80,9 @@ export default function PostDetailPage() {
         <article className="bg-card rounded-lg border p-8 shadow-sm">
           {/* Category and Date */}
           <div className="flex items-center gap-3 mb-4">
-            <span
-              className={`inline-block px-3 py-1 text-sm font-semibold rounded ${
-                post.category === "NOTICE"
-                  ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                  : post.category === "QNA"
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                  : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-              }`}
-            >
-              {post.category}
-            </span>
+            <CategoryBadge category={post.category} />
             <span className="text-sm text-muted-foreground">
-              {new Date(post.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {formatDateTime(post.createdAt)}
             </span>
           </div>
 

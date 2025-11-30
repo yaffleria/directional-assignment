@@ -2,15 +2,19 @@ import { useState, useCallback } from "react";
 import { api } from "../api/client";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Category, SortField, SortOrder } from "../api/api";
+import { useQuery } from "@tanstack/react-query";
+import type { Category, SortField, SortOrder } from "../api/data-contracts";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
+import { Select } from "../components/ui/Select";
+import { LoadingSpinner } from "../components/ui/LoadingSpinner";
+import { CategoryBadge } from "../components/ui/CategoryBadge";
+import { useDeletePost } from "../hooks/useDeletePost";
+import { formatDate } from "../lib/date";
 import { Search, Plus, LogOut } from "lucide-react";
 
 export default function PostsListPage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<Category | "">("");
   const [sort, setSort] = useState<SortField>("createdAt" as SortField);
@@ -47,12 +51,7 @@ export default function PostsListPage() {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.posts.postsDelete2(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
-  });
+  const { handleDelete, isPending: isDeleting } = useDeletePost();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -69,10 +68,9 @@ export default function PostsListPage() {
     [refetch]
   );
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this post?")) {
-      await deleteMutation.mutateAsync(id);
-    }
+  const resetPagination = () => {
+    setCursors([]);
+    setCurrentPage(0);
   };
 
   return (
@@ -120,53 +118,47 @@ export default function PostsListPage() {
           </form>
 
           <div className="flex gap-4 flex-wrap">
-            <select
+            <Select
               value={category}
               onChange={(e) => {
                 setCategory(e.target.value as Category | "");
-                setCursors([]);
-                setCurrentPage(0);
+                resetPagination();
               }}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="">All Categories</option>
               <option value="NOTICE">Notice</option>
               <option value="QNA">Q&A</option>
               <option value="FREE">Free</option>
-            </select>
+            </Select>
 
-            <select
+            <Select
               value={sort}
               onChange={(e) => {
                 setSort(e.target.value as SortField);
-                setCursors([]);
-                setCurrentPage(0);
+                resetPagination();
               }}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="createdAt">Sort by Date</option>
               <option value="title">Sort by Title</option>
-            </select>
+            </Select>
 
-            <select
+            <Select
               value={order}
               onChange={(e) => {
                 setOrder(e.target.value as SortOrder);
-                setCursors([]);
-                setCurrentPage(0);
+                resetPagination();
               }}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               <option value="desc">Descending</option>
               <option value="asc">Ascending</option>
-            </select>
+            </Select>
           </div>
         </div>
 
         {/* Posts List */}
         {isLoading ? (
           <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            <LoadingSpinner />
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-12">
@@ -185,26 +177,9 @@ export default function PostsListPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <span
-                          className={`inline-block px-2 py-1 text-xs font-semibold rounded ${
-                            post.category === "NOTICE"
-                              ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                              : post.category === "QNA"
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                              : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                          }`}
-                        >
-                          {post.category}
-                        </span>
+                        <CategoryBadge category={post.category} />
                         <span className="text-xs text-muted-foreground">
-                          {new Date(post.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
+                          {formatDate(post.createdAt)}
                         </span>
                       </div>
                       <h2
@@ -239,7 +214,7 @@ export default function PostsListPage() {
                         size="sm"
                         variant="destructive"
                         onClick={() => handleDelete(post.id)}
-                        disabled={deleteMutation.isPending}
+                        disabled={isDeleting}
                       >
                         Delete
                       </Button>
@@ -251,7 +226,7 @@ export default function PostsListPage() {
 
             {nextCursor && (
               <div ref={ref} className="mt-8 flex justify-center py-4">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                <LoadingSpinner />
               </div>
             )}
           </>

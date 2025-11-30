@@ -5,8 +5,9 @@ import { Mock } from "./Mock";
 import { Health } from "./Health";
 
 // Create axios instance with base configuration
+// Create axios instance with base configuration
 const axiosInstance = axios.create({
-  baseURL: "https://fe-hiring-rest-api.vercel.app",
+  baseURL: "/api",
 });
 
 // Function to set auth token
@@ -32,14 +33,10 @@ class API {
   public health: Health;
 
   constructor() {
-    this.auth = new Auth({ baseURL: "https://fe-hiring-rest-api.vercel.app" });
-    this.posts = new Posts({
-      baseURL: "https://fe-hiring-rest-api.vercel.app",
-    });
-    this.mock = new Mock({ baseURL: "https://fe-hiring-rest-api.vercel.app" });
-    this.health = new Health({
-      baseURL: "https://fe-hiring-rest-api.vercel.app",
-    });
+    this.auth = new Auth({ baseURL: "/api" });
+    this.posts = new Posts({ baseURL: "/api" });
+    this.mock = new Mock({ baseURL: "/api" });
+    this.health = new Health({ baseURL: "/api" });
 
     // Share the same axios instance for auth token management
     this.auth.instance = axiosInstance;

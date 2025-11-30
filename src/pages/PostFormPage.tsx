@@ -8,7 +8,7 @@ import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Label } from "../components/ui/Label";
 import { ArrowLeft } from "lucide-react";
-import type { Category } from "../api/api";
+import type { Category } from "../api/data-contracts";
 
 const postSchema = z.object({
   title: z
