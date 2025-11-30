@@ -7,10 +7,13 @@ import { CategoryBadge } from "../components/ui/CategoryBadge";
 import { useDeletePost } from "../hooks/useDeletePost";
 import { formatDateTime } from "../lib/date";
 import { ArrowLeft, Edit, Trash2 } from "lucide-react";
+import { Modal } from "../components/ui/Modal";
+import { useModal } from "../hooks/useModal";
 
 export default function PostDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const deleteModal = useModal();
 
   const { data: post, isLoading } = useQuery({
     queryKey: ["post", id],
@@ -65,7 +68,7 @@ export default function PostDetailPage() {
             </Button>
             <Button
               variant="destructive"
-              onClick={() => id && handleDelete(id)}
+              onClick={() => deleteModal.open()}
               disabled={isDeleting}
               className="flex items-center gap-2"
             >
@@ -121,6 +124,32 @@ export default function PostDetailPage() {
           </div>
         </article>
       </div>
+
+      <Modal
+        isOpen={deleteModal.isOpen}
+        onClose={deleteModal.close}
+        title="Delete Post"
+        description="Are you sure you want to delete this post? This action cannot be undone."
+        footer={
+          <>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (id) {
+                  handleDelete(id);
+                  deleteModal.close();
+                }
+              }}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+            <Button variant="outline" onClick={deleteModal.close}>
+              Cancel
+            </Button>
+          </>
+        }
+      />
     </div>
   );
 }

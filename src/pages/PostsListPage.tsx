@@ -12,6 +12,8 @@ import { CategoryBadge } from "../components/ui/CategoryBadge";
 import { useDeletePost } from "../hooks/useDeletePost";
 import { formatDate } from "../lib/date";
 import { Search, Plus, LogOut } from "lucide-react";
+import { Modal } from "../components/ui/Modal";
+import { useModal } from "../hooks/useModal";
 
 export default function PostsListPage() {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ export default function PostsListPage() {
   const [order, setOrder] = useState<SortOrder>("desc" as SortOrder);
   const [cursors, setCursors] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
+  const deleteModal = useModal<string>();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["posts", search, category, sort, order, currentPage],
@@ -213,7 +216,7 @@ export default function PostsListPage() {
                       <Button
                         size="sm"
                         variant="destructive"
-                        onClick={() => handleDelete(post.id)}
+                        onClick={() => deleteModal.open(post.id)}
                         disabled={isDeleting}
                       >
                         Delete
@@ -232,6 +235,32 @@ export default function PostsListPage() {
           </>
         )}
       </div>
+
+      <Modal
+        isOpen={deleteModal.isOpen}
+        onClose={deleteModal.close}
+        title="Delete Post"
+        description="Are you sure you want to delete this post? This action cannot be undone."
+        footer={
+          <>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (deleteModal.data) {
+                  handleDelete(deleteModal.data);
+                  deleteModal.close();
+                }
+              }}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+            <Button variant="outline" onClick={deleteModal.close}>
+              Cancel
+            </Button>
+          </>
+        }
+      />
     </div>
   );
 }
