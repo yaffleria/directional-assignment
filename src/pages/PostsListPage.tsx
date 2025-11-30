@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { api } from "../api/client";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
@@ -56,7 +56,7 @@ export default function PostsListPage() {
   });
 
   // Flatten all pages into a single posts array
-  const posts = data?.pages.flatMap((page) => page.items) || [];
+  const posts = data?.pages.flatMap((page) => page.items ?? []) || [];
 
   // Infinite scroll trigger
   const { ref } = useInView({

@@ -10,6 +10,7 @@ interface LegendItem {
     strokeDasharray?: string;
     value: string;
     dataKey?: string;
+    color?: string;
   };
   dataKey?: string;
 }
@@ -29,7 +30,7 @@ export function CustomLegend({
 }: CustomLegendProps) {
   const [colorPicker, setColorPicker] = useState<string | null>(null);
 
-  const getShape = (item: LegendItem, index: number) => {
+  const getShape = (item: LegendItem) => {
     if (markerShape === "circle")
       return <Circle size={12} fill="currentColor" />;
     if (markerShape === "square")
@@ -64,7 +65,7 @@ export function CustomLegend({
                 opacity: isHidden ? 0.5 : 1,
               }}
             >
-              {getShape(entry, index)}
+              {getShape(entry)}
             </div>
             <span
               className={`text-sm ${

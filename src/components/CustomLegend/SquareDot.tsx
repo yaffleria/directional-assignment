@@ -1,7 +1,11 @@
-import { Square } from "lucide-react";
+interface SquareDotProps {
+  cx?: number;
+  cy?: number;
+  fill?: string;
+}
 
-export const SquareDot = (props: any) => {
-  const { cx, cy, fill } = props;
+export const SquareDot = (props: SquareDotProps) => {
+  const { cx = 0, cy = 0, fill = "#000" } = props;
   return (
     <rect
       x={cx - 4}
