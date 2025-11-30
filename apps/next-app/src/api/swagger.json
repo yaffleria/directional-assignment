@@ -1,0 +1,1250 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FE Hiring REST API",
+    "version": "1.0.0",
+    "description": "로그인(JWT) / 본인 포스트 작성·조회 / 목업 300건 제공 - Enum/조건부 입력/제한조건 반영"
+  },
+  "servers": [
+    {
+      "url": "https://fe-hiring-rest-api.vercel.app",
+      "description": "Vercel"
+    },
+    {
+      "url": "http://localhost:4000",
+      "description": "Local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Category": {
+        "type": "string",
+        "enum": ["NOTICE", "QNA", "FREE"]
+      },
+      "SortField": {
+        "type": "string",
+        "enum": ["createdAt", "title"]
+      },
+      "SortOrder": {
+        "type": "string",
+        "enum": ["asc", "desc"]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "u_1"
+          },
+          "email": {
+            "type": "string",
+            "example": "alice@example.com"
+          }
+        }
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "p_abc123"
+          },
+          "userId": {
+            "type": "string",
+            "example": "u_1"
+          },
+          "title": {
+            "type": "string",
+            "example": "Sample Post #1"
+          },
+          "body": {
+            "type": "string",
+            "example": "Hello world"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["react", "ts"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "userId", "title", "body", "category", "tags", "createdAt"]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "alice@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "alice1234"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
+      "PostCreateRequest": {
+        "type": "object",
+        "required": ["title", "body", "category"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 24
+            },
+            "maxItems": 5
+          }
+        }
+      },
+      "PostUpdateRequest": {
+        "description": "부분 업데이트. 최소 1개 이상의 필드를 포함.",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 24
+            },
+            "maxItems": 5
+          }
+        },
+        "additionalProperties": false
+      },
+      "PostListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Post"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true,
+            "description": "다음 페이지를 위한 커서 토큰(opaque base64url). 더 이상 페이지가 없으면 null.",
+            "example": "eyJzIjoidGl0bGUiLCJvIjoiYXNjIiwidiI6Iu2VnO2VgCIsImlkIjoicF83ODkifQ"
+          },
+          "prevCursor": {
+            "type": "string",
+            "nullable": true,
+            "description": "이전 페이지를 위한 커서 토큰(opaque base64url). 더 이상 페이지가 없으면 null.",
+            "example": "eyJzIjoidGl0bGUiLCJvIjoiYXNjIiwidiI6Iu2VnO2VgCIsImlkIjoicF83ODkifQ"
+          }
+        }
+      },
+      "CoffeeDataPoint": {
+        "type": "object",
+        "properties": {
+          "cups": {
+            "type": "integer",
+            "example": 3,
+            "minimum": 0
+          },
+          "bugs": {
+            "type": "integer",
+            "example": 6,
+            "minimum": 0
+          },
+          "productivity": {
+            "type": "integer",
+            "example": 85,
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": ["cups", "bugs", "productivity"]
+      },
+      "CoffeeTeam": {
+        "type": "object",
+        "properties": {
+          "team": {
+            "type": "string",
+            "example": "Frontend"
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CoffeeDataPoint"
+            }
+          }
+        },
+        "required": ["team", "series"]
+      },
+      "CoffeeConsumptionResponse": {
+        "type": "object",
+        "properties": {
+          "teams": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CoffeeTeam"
+            }
+          }
+        },
+        "example": {
+          "teams": [
+            {
+              "team": "Frontend",
+              "series": [
+                {
+                  "cups": 1,
+                  "bugs": 12,
+                  "productivity": 60
+                },
+                {
+                  "cups": 2,
+                  "bugs": 8,
+                  "productivity": 72
+                },
+                {
+                  "cups": 3,
+                  "bugs": 6,
+                  "productivity": 85
+                },
+                {
+                  "cups": 4,
+                  "bugs": 7,
+                  "productivity": 83
+                },
+                {
+                  "cups": 5,
+                  "bugs": 9,
+                  "productivity": 78
+                }
+              ]
+            },
+            {
+              "team": "Backend",
+              "series": [
+                {
+                  "cups": 1,
+                  "bugs": 14,
+                  "productivity": 58
+                },
+                {
+                  "cups": 2,
+                  "bugs": 10,
+                  "productivity": 70
+                },
+                {
+                  "cups": 3,
+                  "bugs": 7,
+                  "productivity": 82
+                },
+                {
+                  "cups": 4,
+                  "bugs": 8,
+                  "productivity": 80
+                },
+                {
+                  "cups": 5,
+                  "bugs": 11,
+                  "productivity": 75
+                }
+              ]
+            },
+            {
+              "team": "AI",
+              "series": [
+                {
+                  "cups": 1,
+                  "bugs": 13,
+                  "productivity": 62
+                },
+                {
+                  "cups": 2,
+                  "bugs": 9,
+                  "productivity": 74
+                },
+                {
+                  "cups": 3,
+                  "bugs": 6,
+                  "productivity": 88
+                },
+                {
+                  "cups": 4,
+                  "bugs": 7,
+                  "productivity": 86
+                },
+                {
+                  "cups": 5,
+                  "bugs": 10,
+                  "productivity": 80
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "WeeklyMoodItem": {
+        "type": "object",
+        "properties": {
+          "week": {
+            "type": "string",
+            "example": "2024-12-09"
+          },
+          "happy": {
+            "type": "integer",
+            "example": 72,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "tired": {
+            "type": "integer",
+            "example": 18,
+            "minimum": 0,
+            "maximum": 100
+          },
+          "stressed": {
+            "type": "integer",
+            "example": 10,
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": ["week", "happy", "tired", "stressed"]
+      },
+      "WeeklyMoodTrendResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/WeeklyMoodItem"
+        },
+        "example": [
+          {
+            "week": "2024-11-25",
+            "happy": 68,
+            "tired": 21,
+            "stressed": 11
+          },
+          {
+            "week": "2024-12-02",
+            "happy": 61,
+            "tired": 25,
+            "stressed": 14
+          },
+          {
+            "week": "2024-12-09",
+            "happy": 72,
+            "tired": 18,
+            "stressed": 10
+          },
+          {
+            "week": "2024-12-16",
+            "happy": 58,
+            "tired": 30,
+            "stressed": 12
+          },
+          {
+            "week": "2024-12-23",
+            "happy": 80,
+            "tired": 15,
+            "stressed": 5
+          }
+        ]
+      },
+      "TopCoffeeBrandItem": {
+        "type": "object",
+        "properties": {
+          "brand": {
+            "type": "string",
+            "example": "스타벅스"
+          },
+          "popularity": {
+            "type": "integer",
+            "example": 40,
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": ["brand", "popularity"]
+      },
+      "TopCoffeeBrandsResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/TopCoffeeBrandItem"
+        },
+        "example": [
+          {
+            "brand": "스타벅스",
+            "popularity": 40
+          },
+          {
+            "brand": "컴포즈커피",
+            "popularity": 25
+          },
+          {
+            "brand": "커피빈",
+            "popularity": 20
+          },
+          {
+            "brand": "바나프레소",
+            "popularity": 10
+          },
+          {
+            "brand": "기타",
+            "popularity": 5
+          }
+        ]
+      },
+      "DeleteResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": true
+          },
+          "deleted": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 1
+          }
+        },
+        "required": ["ok", "deleted"]
+      },
+      "SnackImpactDataPoint": {
+        "type": "object",
+        "properties": {
+          "snacks": {
+            "type": "integer",
+            "example": 3,
+            "minimum": 0
+          },
+          "meetingsMissed": {
+            "type": "integer",
+            "example": 2,
+            "minimum": 0
+          },
+          "morale": {
+            "type": "integer",
+            "example": 84,
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": ["snacks", "meetingsMissed", "morale"]
+      },
+      "SnackImpactDepartment": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Marketing"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SnackImpactDataPoint"
+            }
+          }
+        },
+        "required": ["name", "metrics"]
+      },
+      "SnackImpactResponse": {
+        "type": "object",
+        "properties": {
+          "departments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SnackImpactDepartment"
+            }
+          }
+        },
+        "example": {
+          "departments": [
+            {
+              "name": "Marketing",
+              "metrics": [
+                {
+                  "snacks": 1,
+                  "meetingsMissed": 3,
+                  "morale": 70
+                },
+                {
+                  "snacks": 2,
+                  "meetingsMissed": 2,
+                  "morale": 78
+                },
+                {
+                  "snacks": 3,
+                  "meetingsMissed": 2,
+                  "morale": 84
+                },
+                {
+                  "snacks": 4,
+                  "meetingsMissed": 4,
+                  "morale": 80
+                },
+                {
+                  "snacks": 5,
+                  "meetingsMissed": 5,
+                  "morale": 76
+                }
+              ]
+            },
+            {
+              "name": "Sales",
+              "metrics": [
+                {
+                  "snacks": 1,
+                  "meetingsMissed": 4,
+                  "morale": 68
+                },
+                {
+                  "snacks": 2,
+                  "meetingsMissed": 3,
+                  "morale": 75
+                },
+                {
+                  "snacks": 3,
+                  "meetingsMissed": 2,
+                  "morale": 82
+                },
+                {
+                  "snacks": 4,
+                  "meetingsMissed": 3,
+                  "morale": 79
+                },
+                {
+                  "snacks": 5,
+                  "meetingsMissed": 6,
+                  "morale": 73
+                }
+              ]
+            },
+            {
+              "name": "HR",
+              "metrics": [
+                {
+                  "snacks": 1,
+                  "meetingsMissed": 1,
+                  "morale": 72
+                },
+                {
+                  "snacks": 2,
+                  "meetingsMissed": 1,
+                  "morale": 80
+                },
+                {
+                  "snacks": 3,
+                  "meetingsMissed": 2,
+                  "morale": 87
+                },
+                {
+                  "snacks": 4,
+                  "meetingsMissed": 2,
+                  "morale": 84
+                },
+                {
+                  "snacks": 5,
+                  "meetingsMissed": 3,
+                  "morale": 81
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "WeeklyWorkoutItem": {
+        "type": "object",
+        "properties": {
+          "week": {
+            "type": "string",
+            "example": "2025-01-05"
+          },
+          "running": {
+            "type": "integer",
+            "example": 12,
+            "minimum": 0
+          },
+          "cycling": {
+            "type": "integer",
+            "example": 8,
+            "minimum": 0
+          },
+          "stretching": {
+            "type": "integer",
+            "example": 6,
+            "minimum": 0
+          }
+        },
+        "required": ["week", "running", "cycling", "stretching"]
+      },
+      "WeeklyWorkoutTrendResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/WeeklyWorkoutItem"
+        },
+        "example": [
+          {
+            "week": "2025-01-05",
+            "running": 12,
+            "cycling": 8,
+            "stretching": 6
+          },
+          {
+            "week": "2025-01-12",
+            "running": 14,
+            "cycling": 10,
+            "stretching": 7
+          },
+          {
+            "week": "2025-01-19",
+            "running": 16,
+            "cycling": 9,
+            "stretching": 8
+          },
+          {
+            "week": "2025-01-26",
+            "running": 13,
+            "cycling": 11,
+            "stretching": 6
+          },
+          {
+            "week": "2025-02-02",
+            "running": 18,
+            "cycling": 12,
+            "stretching": 9
+          }
+        ]
+      },
+      "PopularSnackBrandItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "오리온"
+          },
+          "share": {
+            "type": "integer",
+            "example": 38,
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": ["name", "share"]
+      },
+      "PopularSnackBrandsResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PopularSnackBrandItem"
+        },
+        "example": [
+          {
+            "name": "오리온",
+            "share": 38
+          },
+          {
+            "name": "롯데제과",
+            "share": 28
+          },
+          {
+            "name": "크라운",
+            "share": 18
+          },
+          {
+            "name": "해태",
+            "share": 12
+          },
+          {
+            "name": "기타",
+            "share": 4
+          }
+        ]
+      }
+    },
+    "parameters": {
+      "LimitParam": {
+        "name": "limit",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10
+        },
+        "description": "페이지 크기 (1~100)"
+      },
+      "NextCursorParam": {
+        "name": "nextCursor",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        },
+        "description": "다음 페이지용 커서(opaque). 이전 응답의 nextCursor를 그대로 전달. prevCursor와 동시 사용 불가."
+      },
+      "PrevCursorParam": {
+        "name": "prevCursor",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        },
+        "description": "이전 페이지용 커서(opaque). 이전 응답의 prevCursor를 그대로 전달. nextCursor와 동시 사용 불가."
+      },
+      "SortParam": {
+        "name": "sort",
+        "in": "query",
+        "schema": {
+          "$ref": "#/components/schemas/SortField"
+        },
+        "description": "정렬 필드"
+      },
+      "OrderParam": {
+        "name": "order",
+        "in": "query",
+        "schema": {
+          "$ref": "#/components/schemas/SortOrder"
+        },
+        "description": "정렬 방향"
+      },
+      "CategoryParam": {
+        "name": "category",
+        "in": "query",
+        "schema": {
+          "$ref": "#/components/schemas/Category"
+        }
+      },
+      "FromParam": {
+        "name": "from",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "ToParam": {
+        "name": "to",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "IdPath": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "SearchParam": {
+        "name": "search",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        },
+        "description": "제목/본문 검색어 (공백으로 여러 단어 입력 시 AND 매칭)"
+      },
+      "CountParam": {
+        "name": "count",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "default": 300,
+          "minimum": 1,
+          "maximum": 500
+        },
+        "description": "반환할 항목 수 (고정 500개 중 앞에서부터 slice). 기본 300, 최대 500",
+        "example": 5
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "로그인 (JWT 발급)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "로그인 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/posts": {
+      "get": {
+        "summary": "내 포스트 목록 (본인 것만)",
+        "description": "양방향 커서 기반 페이지네이션(prevCursor/nextCursor)을 지원합니다. prev/next를 동시에 전달할 수 없습니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/LimitParam"
+          },
+          {
+            "$ref": "#/components/parameters/PrevCursorParam"
+          },
+          {
+            "$ref": "#/components/parameters/NextCursorParam"
+          },
+          {
+            "$ref": "#/components/parameters/SortParam"
+          },
+          {
+            "$ref": "#/components/parameters/OrderParam"
+          },
+          {
+            "$ref": "#/components/parameters/CategoryParam"
+          },
+          {
+            "$ref": "#/components/parameters/FromParam"
+          },
+          {
+            "$ref": "#/components/parameters/ToParam"
+          },
+          {
+            "$ref": "#/components/parameters/SearchParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "목록",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "summary": "포스트 작성 (본인)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "생성됨",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "summary": "내 모든 포스트 삭제",
+        "description": "JWT 소유자의 모든 포스트를 삭제합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "삭제된 개수 반환",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/posts/{id}": {
+      "get": {
+        "summary": "포스트 단건 (본인 것만)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "단건",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "포스트 부분 업데이트 (본인 것만)",
+        "description": "필요한 필드만 부분 업데이트합니다. 최소 1개 필드가 필요합니다.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "업데이트된 포스트",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "포스트 삭제 (본인 것만)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdPath"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "삭제됨",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/mock/posts": {
+      "get": {
+        "summary": "고정 Mock 데이터 N건 반환 (기본 300, 최대 500)",
+        "description": "서버 시작 시 생성된 고정 500개 데이터 중 앞에서부터 `count`개를 반환합니다. 항상 동일한 데이터셋에서 slice 되므로 요청마다 결과가 일관됩니다.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CountParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "목업 목록",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Post"
+                      }
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": 300
+                    }
+                  }
+                },
+                "examples": {
+                  "SmallSample": {
+                    "summary": "예시: count=3",
+                    "value": {
+                      "items": [
+                        {
+                          "id": "m_0001",
+                          "userId": "u_mock_1",
+                          "title": "샘플 포스트 #1",
+                          "body": "이것은 고정된 테스트용 포스트 본문입니다. (1)번째 게시글.",
+                          "category": "NOTICE",
+                          "tags": ["react"],
+                          "createdAt": "2025-10-22T11:40:00.000Z"
+                        },
+                        {
+                          "id": "m_0002",
+                          "userId": "u_mock_2",
+                          "title": "샘플 포스트 #2",
+                          "body": "이것은 고정된 테스트용 포스트 본문입니다. (2)번째 게시글.",
+                          "category": "QNA",
+                          "tags": ["typescript"],
+                          "createdAt": "2025-10-22T10:40:00.000Z"
+                        },
+                        {
+                          "id": "m_0003",
+                          "userId": "u_mock_3",
+                          "title": "샘플 포스트 #3",
+                          "body": "이것은 고정된 테스트용 포스트 본문입니다. (3)번째 게시글.",
+                          "category": "FREE",
+                          "tags": ["nextjs"],
+                          "createdAt": "2025-10-22T09:40:00.000Z"
+                        }
+                      ],
+                      "count": 3
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mock/top-coffee-brands": {
+      "get": {
+        "summary": "바/도넛 차트용 인기 커피 브랜드 분포 목업",
+        "responses": {
+          "200": {
+            "description": "브랜드/인기도 배열",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopCoffeeBrandsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mock/popular-snack-brands": {
+      "get": {
+        "summary": "바/도넛 차트용 인기 간식 브랜드 분포 목업",
+        "responses": {
+          "200": {
+            "description": "브랜드/점유율 배열",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PopularSnackBrandsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mock/weekly-mood-trend": {
+      "get": {
+        "summary": "스택형 바/면적 차트용 주간 무드 트렌드 목업",
+        "responses": {
+          "200": {
+            "description": "주간 무드 배열",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyMoodTrendResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mock/weekly-workout-trend": {
+      "get": {
+        "summary": "스택형 바/면적 차트용 주간 운동 트렌드 목업",
+        "responses": {
+          "200": {
+            "description": "주간 운동 배열",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyWorkoutTrendResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mock/coffee-consumption": {
+      "get": {
+        "summary": "멀티라인 차트용 팀별 커피 소비/버그/생산성 목업",
+        "responses": {
+          "200": {
+            "description": "팀별 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoffeeConsumptionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mock/snack-impact": {
+      "get": {
+        "summary": "멀티라인 차트용 부서별 간식 영향 목업",
+        "responses": {
+          "200": {
+            "description": "부서별 데이터",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnackImpactResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}
