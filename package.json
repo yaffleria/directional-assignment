@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:api": "swagger-typescript-api generate -p src/api/swagger.json -o src/api -n api.ts --modular --axios"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
