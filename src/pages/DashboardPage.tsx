@@ -35,6 +35,14 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState<1 | 2 | 3 | 4>(1);
   const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set());
+  const [customColors, setCustomColors] = useState<Record<string, string>>({});
+
+  const handleColorChange = (dataKey: string, color: string) => {
+    setCustomColors((prev) => ({
+      ...prev,
+      [dataKey]: color,
+    }));
+  };
 
   const { data: coffeeBrands } = useQuery({
     queryKey: ["coffeeBrands"],
@@ -298,10 +306,18 @@ export default function DashboardPage() {
                       data={team.series}
                       dataKey="productivity"
                       name={`${team.team} Productivity`}
-                      stroke={COLORS.primary[i]}
+                      stroke={
+                        customColors[`${team.team} Productivity`] ||
+                        COLORS.primary[i]
+                      }
                       strokeWidth={2}
                       hide={hiddenSeries.has(`${team.team} Productivity`)}
-                      dot={{ r: 4, fill: COLORS.primary[i] }}
+                      dot={{
+                        r: 4,
+                        fill:
+                          customColors[`${team.team} Productivity`] ||
+                          COLORS.primary[i],
+                      }}
                       activeDot={{ r: 6 }}
                     />
                   ))}
@@ -313,11 +329,20 @@ export default function DashboardPage() {
                       data={team.series}
                       dataKey="bugs"
                       name={`${team.team} Bugs`}
-                      stroke={COLORS.primary[i]}
+                      stroke={
+                        customColors[`${team.team} Bugs`] || COLORS.primary[i]
+                      }
                       strokeWidth={2}
                       strokeDasharray="5 5"
                       hide={hiddenSeries.has(`${team.team} Bugs`)}
-                      dot={<SquareDot fill={COLORS.primary[i]} />}
+                      dot={
+                        <SquareDot
+                          fill={
+                            customColors[`${team.team} Bugs`] ||
+                            COLORS.primary[i]
+                          }
+                        />
+                      }
                       activeDot={{ r: 6 }}
                     />
                   ))}
@@ -327,6 +352,7 @@ export default function DashboardPage() {
                         onToggle={toggleSeries}
                         hiddenSeries={hiddenSeries}
                         markerShape="auto"
+                        onColorChange={handleColorChange}
                       />
                     }
                   />
@@ -375,10 +401,17 @@ export default function DashboardPage() {
                       data={dept.metrics}
                       dataKey="morale"
                       name={`${dept.name} Morale`}
-                      stroke={COLORS.primary[i]}
+                      stroke={
+                        customColors[`${dept.name} Morale`] || COLORS.primary[i]
+                      }
                       strokeWidth={2}
                       hide={hiddenSeries.has(`${dept.name} Morale`)}
-                      dot={{ r: 4, fill: COLORS.primary[i] }}
+                      dot={{
+                        r: 4,
+                        fill:
+                          customColors[`${dept.name} Morale`] ||
+                          COLORS.primary[i],
+                      }}
                       activeDot={{ r: 6 }}
                     />
                   ))}
@@ -390,11 +423,21 @@ export default function DashboardPage() {
                       data={dept.metrics}
                       dataKey="meetingsMissed"
                       name={`${dept.name} Meetings`}
-                      stroke={COLORS.primary[i]}
+                      stroke={
+                        customColors[`${dept.name} Meetings`] ||
+                        COLORS.primary[i]
+                      }
                       strokeWidth={2}
                       strokeDasharray="5 5"
                       hide={hiddenSeries.has(`${dept.name} Meetings`)}
-                      dot={<SquareDot fill={COLORS.primary[i]} />}
+                      dot={
+                        <SquareDot
+                          fill={
+                            customColors[`${dept.name} Meetings`] ||
+                            COLORS.primary[i]
+                          }
+                        />
+                      }
                       activeDot={{ r: 6 }}
                     />
                   ))}

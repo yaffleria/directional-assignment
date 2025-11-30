@@ -20,6 +20,7 @@ interface CustomLegendProps {
   onToggle?: (dataKey: string) => void;
   hiddenSeries?: Set<string>;
   markerShape?: "circle" | "square" | "auto";
+  onColorChange?: (dataKey: string, color: string) => void;
 }
 
 export function CustomLegend({
@@ -27,6 +28,7 @@ export function CustomLegend({
   onToggle,
   hiddenSeries = new Set(),
   markerShape = "auto",
+  onColorChange,
 }: CustomLegendProps) {
   const [colorPicker, setColorPicker] = useState<string | null>(null);
 
@@ -93,13 +95,12 @@ export function CustomLegend({
               </Button>
             )}
             {colorPicker === dataKey && (
-              <div className="absolute z-10 bg-popover border rounded-md p-2 shadow-lg">
+              <div className="absolute z-10 bg-popover border rounded-md p-2 shadow-lg mt-8">
                 <input
                   type="color"
                   defaultValue={color}
                   onChange={(e) => {
-                    // Color change logic would go here if needed
-                    console.log("Color changed:", e.target.value);
+                    onColorChange?.(dataKey, e.target.value);
                   }}
                   onClick={(e) => e.stopPropagation()}
                 />
