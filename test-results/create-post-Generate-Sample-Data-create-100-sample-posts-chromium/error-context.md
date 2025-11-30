@@ -13,7 +13,7 @@
       - generic [ref=e11]: Title *
       - textbox "Title *" [active] [ref=e12]:
         - /placeholder: Enter post title (max 80 characters)
-        - text: "중요 공지 #1"
+        - text: "문의드립니다 #1"
     - generic [ref=e13]:
       - generic [ref=e14]: Category *
       - combobox [ref=e15] [cursor=pointer]:

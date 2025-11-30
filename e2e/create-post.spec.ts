@@ -38,6 +38,16 @@ const TAG_OPTIONS = [
   ["guide", "tutorial"],
 ];
 
+// Helper to get category label
+function getCategoryLabel(category: string): string {
+  const labels: Record<string, string> = {
+    NOTICE: "Notice",
+    QNA: "Q&A",
+    FREE: "Free",
+  };
+  return labels[category] || category;
+}
+
 // Helper function to generate random data
 function generatePostData(index: number) {
   const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
@@ -83,9 +93,17 @@ test.describe("New Post E2E Test", () => {
     // Wait for navigation to post form
     await page.waitForURL("/posts/new");
 
-    // Fill in the form
+    // Fill title
     await page.fill("input#title", postData.title);
-    await page.selectOption("select#category", postData.category);
+
+    // Select category using shadcn Select component
+    await page.click('button[role="combobox"]');
+    await page.waitForTimeout(300); // Wait for dropdown to open
+    await page.click(
+      `[role="option"]:has-text("${getCategoryLabel(postData.category)}")`
+    );
+
+    // Fill tags and body
     await page.fill("input#tags", postData.tags);
     await page.fill("textarea#body", postData.body);
 
@@ -128,12 +146,20 @@ test.describe("Generate Sample Data", () => {
         await page.click('button:has-text("New Post")');
         await page.waitForURL("/posts/new", { timeout: 10000 });
 
-        // Fill form with increased timeouts
+        // Fill title
         await page.fill("input#title", postData.title, { timeout: 5000 });
-        await page.selectOption("select#category", postData.category, {
-          timeout: 5000,
-        });
+
+        // Select category using shadcn Select component
+        await page.click('button[role="combobox"]');
+        await page.waitForTimeout(300); // Wait for dropdown to open
+        await page.click(
+          `[role="option"]:has-text("${getCategoryLabel(postData.category)}")`
+        );
+
+        // Fill tags
         await page.fill("input#tags", postData.tags, { timeout: 5000 });
+
+        // Fill body
         await page.fill("textarea#body", postData.body, { timeout: 5000 });
 
         // Submit
