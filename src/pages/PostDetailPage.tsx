@@ -7,8 +7,10 @@ import { CategoryBadge } from "../components/ui/CategoryBadge";
 import { useDeletePost } from "../hooks/useDeletePost";
 import { formatDateTime } from "../lib/date";
 import { ArrowLeft, Edit, Trash2 } from "lucide-react";
-import { Modal } from "../components/ui/Modal";
 import { useModal } from "../hooks/useModal";
+import { PageHeader } from "../components/layout/PageHeader";
+import { DeletePostModal } from "../components/posts/DeletePostModal";
+import { Tag } from "../components/ui/Tag";
 
 export default function PostDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -46,38 +48,35 @@ export default function PostDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <PageHeader>
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/posts")}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft size={18} />
+          Back to Posts
+        </Button>
+        <div className="flex gap-2">
           <Button
-            variant="ghost"
-            onClick={() => navigate("/posts")}
+            variant="outline"
+            onClick={() => navigate(`/posts/${id}/edit`)}
             className="flex items-center gap-2"
           >
-            <ArrowLeft size={18} />
-            Back to Posts
+            <Edit size={16} />
+            Edit
           </Button>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => navigate(`/posts/${id}/edit`)}
-              className="flex items-center gap-2"
-            >
-              <Edit size={16} />
-              Edit
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => deleteModal.open()}
-              disabled={isDeleting}
-              className="flex items-center gap-2"
-            >
-              <Trash2 size={16} />
-              Delete
-            </Button>
-          </div>
+          <Button
+            variant="destructive"
+            onClick={() => deleteModal.open()}
+            disabled={isDeleting}
+            className="flex items-center gap-2"
+          >
+            <Trash2 size={16} />
+            Delete
+          </Button>
         </div>
-      </header>
+      </PageHeader>
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <article className="bg-card rounded-lg border p-8 shadow-sm">
@@ -98,12 +97,9 @@ export default function PostDetailPage() {
           {post.tags.length > 0 && (
             <div className="flex gap-2 flex-wrap mb-6">
               {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-block px-3 py-1 text-sm bg-muted rounded-full"
-                >
-                  #{tag}
-                </span>
+                <Tag key={tag} className="rounded-full px-3 py-1 text-sm">
+                  {tag}
+                </Tag>
               ))}
             </div>
           )}
@@ -125,30 +121,16 @@ export default function PostDetailPage() {
         </article>
       </div>
 
-      <Modal
+      <DeletePostModal
         isOpen={deleteModal.isOpen}
         onClose={deleteModal.close}
-        title="Delete Post"
-        description="Are you sure you want to delete this post? This action cannot be undone."
-        footer={
-          <>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                if (id) {
-                  handleDelete(id);
-                  deleteModal.close();
-                }
-              }}
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </Button>
-            <Button variant="outline" onClick={deleteModal.close}>
-              Cancel
-            </Button>
-          </>
-        }
+        onConfirm={() => {
+          if (id) {
+            handleDelete(id);
+            deleteModal.close();
+          }
+        }}
+        isDeleting={isDeleting}
       />
     </div>
   );

@@ -8,12 +8,12 @@ import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
 import { LoadingSpinner } from "../components/ui/LoadingSpinner";
-import { CategoryBadge } from "../components/ui/CategoryBadge";
 import { useDeletePost } from "../hooks/useDeletePost";
-import { formatDate } from "../lib/date";
 import { Search, Plus, LogOut } from "lucide-react";
-import { Modal } from "../components/ui/Modal";
 import { useModal } from "../hooks/useModal";
+import { PageHeader } from "../components/layout/PageHeader";
+import { PostCard } from "../components/posts/PostCard";
+import { DeletePostModal } from "../components/posts/DeletePostModal";
 
 export default function PostsListPage() {
   const navigate = useNavigate();
@@ -78,27 +78,24 @@ export default function PostsListPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">Posts</h1>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => navigate("/posts/new")}
-              className="flex items-center gap-2"
-            >
-              <Plus size={16} />
-              New Post
-            </Button>
-            <Button onClick={() => navigate("/dashboard")} variant="outline">
-              Dashboard
-            </Button>
-            <Button onClick={handleLogout} variant="outline">
-              <LogOut size={16} />
-            </Button>
-          </div>
+      <PageHeader>
+        <h1 className="text-2xl font-bold text-foreground">Posts</h1>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => navigate("/posts/new")}
+            className="flex items-center gap-2"
+          >
+            <Plus size={16} />
+            New Post
+          </Button>
+          <Button onClick={() => navigate("/dashboard")} variant="outline">
+            Dashboard
+          </Button>
+          <Button onClick={handleLogout} variant="outline">
+            <LogOut size={16} />
+          </Button>
         </div>
-      </header>
+      </PageHeader>
 
       <div className="container mx-auto px-4 py-8">
         {/* Filters */}
@@ -173,57 +170,12 @@ export default function PostsListPage() {
           <>
             <div className="space-y-4">
               {posts.map((post) => (
-                <div
+                <PostCard
                   key={post.id}
-                  className="rounded-lg border bg-card p-6 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <CategoryBadge category={post.category} />
-                        <span className="text-xs text-muted-foreground">
-                          {formatDate(post.createdAt)}
-                        </span>
-                      </div>
-                      <h2
-                        className="text-xl font-semibold mb-2 cursor-pointer hover:text-primary"
-                        onClick={() => navigate(`/posts/${post.id}`)}
-                      >
-                        {post.title}
-                      </h2>
-                      <p className="text-muted-foreground line-clamp-2 mb-3">
-                        {post.body}
-                      </p>
-                      <div className="flex gap-2 flex-wrap">
-                        {post.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="inline-block px-2 py-1 text-xs bg-muted rounded"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => navigate(`/posts/${post.id}/edit`)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => deleteModal.open(post.id)}
-                        disabled={isDeleting}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                  post={post}
+                  onDeleteClick={deleteModal.open}
+                  isDeleting={isDeleting}
+                />
               ))}
             </div>
 
@@ -236,30 +188,16 @@ export default function PostsListPage() {
         )}
       </div>
 
-      <Modal
+      <DeletePostModal
         isOpen={deleteModal.isOpen}
         onClose={deleteModal.close}
-        title="Delete Post"
-        description="Are you sure you want to delete this post? This action cannot be undone."
-        footer={
-          <>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                if (deleteModal.data) {
-                  handleDelete(deleteModal.data);
-                  deleteModal.close();
-                }
-              }}
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </Button>
-            <Button variant="outline" onClick={deleteModal.close}>
-              Cancel
-            </Button>
-          </>
-        }
+        onConfirm={() => {
+          if (deleteModal.data) {
+            handleDelete(deleteModal.data);
+            deleteModal.close();
+          }
+        }}
+        isDeleting={isDeleting}
       />
     </div>
   );

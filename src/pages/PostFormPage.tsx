@@ -7,6 +7,8 @@ import { api } from "../api/client";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Label } from "../components/ui/Label";
+import { Textarea } from "../components/ui/Textarea";
+import { PageHeader } from "../components/layout/PageHeader";
 import { ArrowLeft } from "lucide-react";
 import type { Category } from "../api/data-contracts";
 
@@ -116,23 +118,20 @@ export default function PostFormPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(isEditing ? `/posts/${id}` : "/posts")}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft size={18} />
-            Back
-          </Button>
-          <h1 className="text-xl font-bold">
-            {isEditing ? "Edit Post" : "Create New Post"}
-          </h1>
-          <div className="w-20"></div> {/* Spacer for alignment */}
-        </div>
-      </header>
+      <PageHeader>
+        <Button
+          variant="ghost"
+          onClick={() => navigate(isEditing ? `/posts/${id}` : "/posts")}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft size={18} />
+          Back
+        </Button>
+        <h1 className="text-xl font-bold">
+          {isEditing ? "Edit Post" : "Create New Post"}
+        </h1>
+        <div className="w-20"></div> {/* Spacer for alignment */}
+      </PageHeader>
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <form
@@ -202,14 +201,12 @@ export default function PostFormPage() {
             <Label htmlFor="body">
               Content <span className="text-destructive">*</span>
             </Label>
-            <textarea
+            <Textarea
               id="body"
               rows={12}
               placeholder="Enter post content (max 2000 characters)"
               {...register("body")}
-              className={`w-full rounded-md border ${
-                errors.body ? "border-destructive" : "border-input"
-              } bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-y`}
+              className={`resize-y ${errors.body ? "border-destructive" : ""}`}
             />
             {errors.body && (
               <p className="text-xs text-destructive">{errors.body.message}</p>
