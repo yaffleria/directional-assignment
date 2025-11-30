@@ -35,7 +35,7 @@ export default function LoginPage() {
       if (token) {
         setAuthToken(token);
         localStorage.setItem("token", token);
-        navigate("/products");
+        navigate("/posts");
       }
     } catch (err) {
       console.error(err);

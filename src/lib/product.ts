@@ -1,4 +1,4 @@
-import { Post } from "../api/api";
+import type { Post } from "../api/api";
 
 export interface Product extends Post {
   price: number;
