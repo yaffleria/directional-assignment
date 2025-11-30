@@ -21,6 +21,8 @@ import {
 } from "recharts";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "../components/layout/PageHeader/PageHeader";
+import { CustomLegend } from "../components/CustomLegend/CustomLegend";
+import { SquareDot } from "../components/CustomLegend/SquareDot";
 import { ArrowLeft } from "lucide-react";
 
 const COLORS = {
@@ -32,6 +34,7 @@ const COLORS = {
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState<1 | 2 | 3 | 4>(1);
+  const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set());
 
   const { data: coffeeBrands } = useQuery({
     queryKey: ["coffeeBrands"],
@@ -64,6 +67,18 @@ export default function DashboardPage() {
     cycling: workoutTrend?.[index]?.cycling || 0,
     stretching: workoutTrend?.[index]?.stretching || 0,
   }));
+
+  const toggleSeries = (dataKey: string) => {
+    setHiddenSeries((prev) => {
+      const next = new Set(prev);
+      if (next.has(dataKey)) {
+        next.delete(dataKey);
+      } else {
+        next.add(dataKey);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -257,10 +272,24 @@ export default function DashboardPage() {
                       offset: -5,
                     }}
                   />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
+                  <YAxis
+                    yAxisId="left"
+                    label={{
+                      value: "Bugs/Productivity",
+                      angle: -90,
+                      position: "insideLeft",
+                    }}
+                  />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    label={{
+                      value: "Bugs/Productivity",
+                      angle: 90,
+                      position: "insideRight",
+                    }}
+                  />
                   <Tooltip />
-                  <Legend />
                   {coffeeConsumption?.teams?.map((team, i) => (
                     <Line
                       key={team.team}
@@ -268,9 +297,12 @@ export default function DashboardPage() {
                       type="monotone"
                       data={team.series}
                       dataKey="productivity"
-                      name={`${team.team}  Productivity`}
+                      name={`${team.team} Productivity`}
                       stroke={COLORS.primary[i]}
                       strokeWidth={2}
+                      hide={hiddenSeries.has(`${team.team} Productivity`)}
+                      dot={{ r: 4, fill: COLORS.primary[i] }}
+                      activeDot={{ r: 6 }}
                     />
                   ))}
                   {coffeeConsumption?.teams?.map((team, i) => (
@@ -284,8 +316,20 @@ export default function DashboardPage() {
                       stroke={COLORS.primary[i]}
                       strokeWidth={2}
                       strokeDasharray="5 5"
+                      hide={hiddenSeries.has(`${team.team} Bugs`)}
+                      dot={<SquareDot fill={COLORS.primary[i]} />}
+                      activeDot={{ r: 6 }}
                     />
                   ))}
+                  <Legend
+                    content={
+                      <CustomLegend
+                        onToggle={toggleSeries}
+                        hiddenSeries={hiddenSeries}
+                        markerShape="auto"
+                      />
+                    }
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -305,10 +349,24 @@ export default function DashboardPage() {
                       offset: -5,
                     }}
                   />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
+                  <YAxis
+                    yAxisId="left"
+                    label={{
+                      value: "Morale",
+                      angle: -90,
+                      position: "insideLeft",
+                    }}
+                  />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    label={{
+                      value: "Meetings Missed",
+                      angle: 90,
+                      position: "insideRight",
+                    }}
+                  />
                   <Tooltip />
-                  <Legend />
                   {snackImpact?.departments?.map((dept, i) => (
                     <Line
                       key={dept.name}
@@ -319,6 +377,9 @@ export default function DashboardPage() {
                       name={`${dept.name} Morale`}
                       stroke={COLORS.primary[i]}
                       strokeWidth={2}
+                      hide={hiddenSeries.has(`${dept.name} Morale`)}
+                      dot={{ r: 4, fill: COLORS.primary[i] }}
+                      activeDot={{ r: 6 }}
                     />
                   ))}
                   {snackImpact?.departments?.map((dept, i) => (
@@ -332,8 +393,20 @@ export default function DashboardPage() {
                       stroke={COLORS.primary[i]}
                       strokeWidth={2}
                       strokeDasharray="5 5"
+                      hide={hiddenSeries.has(`${dept.name} Meetings`)}
+                      dot={<SquareDot fill={COLORS.primary[i]} />}
+                      activeDot={{ r: 6 }}
                     />
                   ))}
+                  <Legend
+                    content={
+                      <CustomLegend
+                        onToggle={toggleSeries}
+                        hiddenSeries={hiddenSeries}
+                        markerShape="auto"
+                      />
+                    }
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
