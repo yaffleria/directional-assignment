@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { api } from "../api/client";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import type { Category, SortField, SortOrder } from "../api/data-contracts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,35 +20,41 @@ export default function PostsListPage() {
   const [category, setCategory] = useState<Category | "">("");
   const [sort, setSort] = useState<SortField>("createdAt" as SortField);
   const [order, setOrder] = useState<SortOrder>("desc" as SortOrder);
-  const [cursors, setCursors] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
   const deleteModal = useModal<string>();
 
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["posts", search, category, sort, order, currentPage],
-    queryFn: async () => {
-      const nextCursor = cursors[currentPage];
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["posts", search, category, sort, order],
+    queryFn: async ({ pageParam }) => {
       const response = await api.posts.postsList({
         limit: 20,
         search: search || undefined,
         category: category || undefined,
         sort,
         order,
-        nextCursor,
+        nextCursor: pageParam,
       });
       return response.data;
     },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
     staleTime: 1000 * 60,
   });
 
-  const posts = data?.items || [];
-  const nextCursor = data?.nextCursor;
+  // Flatten all pages into a single posts array
+  const posts = data?.pages.flatMap((page) => page.items) || [];
 
+  // Infinite scroll trigger
   const { ref } = useInView({
     onChange: (inView) => {
-      if (inView && nextCursor && !cursors.includes(nextCursor)) {
-        setCursors((prev) => [...prev, nextCursor]);
-        setCurrentPage((prev) => prev + 1);
+      if (inView && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
       }
     },
   });
@@ -63,16 +69,13 @@ export default function PostsListPage() {
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      setCursors([]);
-      setCurrentPage(0);
       refetch();
     },
     [refetch]
   );
 
   const resetPagination = () => {
-    setCursors([]);
-    setCurrentPage(0);
+    refetch();
   };
 
   return (
@@ -176,9 +179,19 @@ export default function PostsListPage() {
               isDeleting={isDeleting}
             />
 
-            {nextCursor && (
+            {/* Infinite Scroll Trigger */}
+            {hasNextPage && (
               <div ref={ref} className="mt-8 flex justify-center py-4">
-                <LoadingSpinner />
+                {isFetchingNextPage && <LoadingSpinner />}
+              </div>
+            )}
+
+            {/* End of list indicator */}
+            {!hasNextPage && posts.length > 0 && (
+              <div className="mt-8 text-center py-4">
+                <p className="text-sm text-muted-foreground">
+                  No more posts to load
+                </p>
               </div>
             )}
           </>
