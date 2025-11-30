@@ -22,6 +22,10 @@ export default function PostsListPage() {
   const [order, setOrder] = useState<SortOrder>("desc" as SortOrder);
   const deleteModal = useModal<string>();
 
+  // Infinite query for posts with cursor-based pagination
+  // The API supports bidirectional pagination (prevCursor/nextCursor)
+  // For infinite scroll (loading more posts as you scroll down), we only use nextCursor
+  // prevCursor would be used if we wanted to load older posts by scrolling up
   const {
     data,
     isLoading,
@@ -38,11 +42,15 @@ export default function PostsListPage() {
         category: category || undefined,
         sort,
         order,
+        // pageParam contains the nextCursor from the previous page
+        // First page: pageParam is undefined, so we get the initial posts
+        // Subsequent pages: pageParam contains the nextCursor to fetch next posts
         nextCursor: pageParam,
       });
       return response.data;
     },
     initialPageParam: undefined as string | undefined,
+    // Extract nextCursor from last page for fetching the next page
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     staleTime: 1000 * 60,
   });
