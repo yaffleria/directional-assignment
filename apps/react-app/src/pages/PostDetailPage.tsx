@@ -1,38 +1,38 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "../api/client";
-import { Button } from "@repo/components";
-import { LoadingPage } from "../components/LoadingSpinner/LoadingSpinner";
-import { CategoryBadge } from "../components/CategoryBadge/CategoryBadge";
-import { useDeletePost } from "../hooks/useDeletePost";
-import { formatDateTime } from "../lib/date";
-import { ArrowLeft, Edit, Trash2 } from "lucide-react";
-import { useModal } from "../hooks/useModal";
-import { PageHeader } from "../components/layout/PageHeader/PageHeader";
-import { DeletePostModal } from "../components/DeletePostModal/DeletePostModal";
-import { Tag } from "../components/Tag/Tag";
+import { useParams, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { api } from '../api/client'
+import { Button } from '@repo/components'
+import { LoadingPage } from '../components/LoadingSpinner/LoadingSpinner'
+import { CategoryBadge } from '../components/CategoryBadge/CategoryBadge'
+import { useDeletePost } from '../hooks/useDeletePost'
+import { formatDateTime } from '../lib/date'
+import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
+import { useModal } from '../hooks/useModal'
+import { PageHeader } from '../components/layout/PageHeader/PageHeader'
+import { DeletePostModal } from '../components/DeletePostModal/DeletePostModal'
+import { Tag } from '../components/Tag/Tag'
 
 export default function PostDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const deleteModal = useModal();
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const deleteModal = useModal()
 
   const { data: post, isLoading } = useQuery({
-    queryKey: ["post", id],
+    queryKey: ['post', id],
     queryFn: async () => {
-      if (!id) throw new Error("No post ID");
-      const response = await api.posts.postsDetail(id);
-      return response.data;
+      if (!id) throw new Error('No post ID')
+      const response = await api.posts.postsDetail(id)
+      return response.data
     },
-    enabled: !!id,
-  });
+    enabled: !!id
+  })
 
   const { handleDelete, isPending: isDeleting } = useDeletePost({
-    redirectTo: "/posts",
-  });
+    redirectTo: '/posts'
+  })
 
   if (isLoading) {
-    return <LoadingPage />;
+    return <LoadingPage />
   }
 
   if (!post) {
@@ -40,10 +40,10 @@ export default function PostDetailPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Post not found</h2>
-          <Button onClick={() => navigate("/posts")}>Go back to posts</Button>
+          <Button onClick={() => navigate('/posts')}>Go back to posts</Button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -51,7 +51,7 @@ export default function PostDetailPage() {
       <PageHeader>
         <Button
           variant="ghost"
-          onClick={() => navigate("/posts")}
+          onClick={() => navigate('/posts')}
           className="flex items-center gap-2"
         >
           <ArrowLeft size={18} />
@@ -83,21 +83,20 @@ export default function PostDetailPage() {
           {/* Category and Date */}
           <div className="flex items-center gap-3 mb-4">
             <CategoryBadge category={post.category} />
-            <span className="text-sm text-muted-foreground">
-              {formatDateTime(post.createdAt)}
-            </span>
+            <span className="text-sm text-muted-foreground">{formatDateTime(post.createdAt)}</span>
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl font-bold mb-6 text-foreground">
-            {post.title}
-          </h1>
+          <h1 className="text-4xl font-bold mb-6 text-foreground">{post.title}</h1>
 
           {/* Tags */}
           {post.tags.length > 0 && (
             <div className="flex gap-2 flex-wrap mb-6">
               {post.tags.map((tag) => (
-                <Tag key={tag} className="rounded-full px-3 py-1 text-sm">
+                <Tag
+                  key={tag}
+                  className="rounded-full px-3 py-1 text-sm"
+                >
                   {tag}
                 </Tag>
               ))}
@@ -106,9 +105,7 @@ export default function PostDetailPage() {
 
           {/* Body */}
           <div className="prose prose-lg dark:prose-invert max-w-none">
-            <div className="whitespace-pre-wrap text-foreground leading-relaxed">
-              {post.body}
-            </div>
+            <div className="whitespace-pre-wrap text-foreground leading-relaxed">{post.body}</div>
           </div>
 
           {/* Metadata */}
@@ -126,12 +123,12 @@ export default function PostDetailPage() {
         onClose={deleteModal.close}
         onConfirm={() => {
           if (id) {
-            handleDelete(id);
-            deleteModal.close();
+            handleDelete(id)
+            deleteModal.close()
           }
         }}
         isDeleting={isDeleting}
       />
     </div>
-  );
+  )
 }

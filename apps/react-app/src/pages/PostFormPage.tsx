@@ -1,45 +1,39 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { postSchema, type PostFormData } from "../schema/posts.schema";
-import { api } from "../api/client";
-import { Button } from "@repo/components";
-import { Input } from "@repo/components";
-import { Label } from "@repo/components";
-import { Textarea } from "@repo/components";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/components";
-import { PageHeader } from "../components/layout/PageHeader/PageHeader";
-import { ArrowLeft } from "lucide-react";
-import type { Category } from "../api/data-contracts";
+import { useParams, useNavigate } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { postSchema, type PostFormData } from '../schema/posts.schema'
+import { api } from '../api/client'
+import { Button } from '@repo/components'
+import { Input } from '@repo/components'
+import { Label } from '@repo/components'
+import { Textarea } from '@repo/components'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/components'
+import { PageHeader } from '../components/layout/PageHeader/PageHeader'
+import { ArrowLeft } from 'lucide-react'
+import type { Category } from '../api/data-contracts'
 
 export default function PostFormPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const isEditing = id !== "new" && !!id;
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const isEditing = id !== 'new' && !!id
 
   const { data: post } = useQuery({
-    queryKey: ["post", id],
+    queryKey: ['post', id],
     queryFn: async () => {
-      if (!id || id === "new") return null;
-      const response = await api.posts.postsDetail(id);
-      return response.data;
+      if (!id || id === 'new') return null
+      const response = await api.posts.postsDetail(id)
+      return response.data
     },
-    enabled: isEditing,
-  });
+    enabled: isEditing
+  })
 
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting }
   } = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
     defaultValues: post
@@ -47,88 +41,86 @@ export default function PostFormPage() {
           title: post.title,
           body: post.body,
           category: post.category,
-          tags: post.tags.join(", "),
+          tags: post.tags.join(', ')
         }
       : {
-          title: "",
-          body: "",
-          category: "FREE" as Category,
-          tags: "",
-        },
-  });
+          title: '',
+          body: '',
+          category: 'FREE' as Category,
+          tags: ''
+        }
+  })
 
   const createMutation = useMutation({
     mutationFn: (data: PostFormData) => {
       const tags = Array.from(
         new Set(
           data.tags
-            .split(",")
+            .split(',')
             .map((t) => t.trim())
             .filter((t) => t.length > 0)
         )
-      ).slice(0, 5);
+      ).slice(0, 5)
 
       return api.posts.postsCreate({
         title: data.title,
         body: data.body,
         category: data.category as Category,
-        tags,
-      });
+        tags
+      })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      navigate("/posts");
-    },
-  });
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+      navigate('/posts')
+    }
+  })
 
   const updateMutation = useMutation({
     mutationFn: (data: PostFormData) => {
-      if (!id) throw new Error("No post ID");
+      if (!id) throw new Error('No post ID')
       const tags = Array.from(
         new Set(
           data.tags
-            .split(",")
+            .split(',')
             .map((t) => t.trim())
             .filter((t) => t.length > 0)
         )
-      ).slice(0, 5);
+      ).slice(0, 5)
 
       return api.posts.postsPartialUpdate(id, {
         title: data.title,
         body: data.body,
         category: data.category as Category,
-        tags,
-      });
+        tags
+      })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      queryClient.invalidateQueries({ queryKey: ["post", id] });
-      navigate(`/posts/${id}`);
-    },
-  });
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+      queryClient.invalidateQueries({ queryKey: ['post', id] })
+      navigate(`/posts/${id}`)
+    }
+  })
 
   const onSubmit = async (data: PostFormData) => {
     if (isEditing) {
-      await updateMutation.mutateAsync(data);
+      await updateMutation.mutateAsync(data)
     } else {
-      await createMutation.mutateAsync(data);
+      await createMutation.mutateAsync(data)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <PageHeader>
         <Button
           variant="ghost"
-          onClick={() => navigate(isEditing ? `/posts/${id}` : "/posts")}
+          onClick={() => navigate(isEditing ? `/posts/${id}` : '/posts')}
           className="flex items-center gap-2"
         >
           <ArrowLeft size={18} />
           Back
         </Button>
-        <h1 className="text-xl font-bold">
-          {isEditing ? "Edit Post" : "Create New Post"}
-        </h1>
+        <h1 className="text-xl font-bold">{isEditing ? 'Edit Post' : 'Create New Post'}</h1>
         <div className="w-20"></div> {/* Spacer for alignment */}
       </PageHeader>
 
@@ -146,12 +138,10 @@ export default function PostFormPage() {
               id="title"
               type="text"
               placeholder="Enter post title (max 80 characters)"
-              {...register("title")}
-              className={errors.title ? "border-destructive" : ""}
+              {...register('title')}
+              className={errors.title ? 'border-destructive' : ''}
             />
-            {errors.title && (
-              <p className="text-xs text-destructive">{errors.title.message}</p>
-            )}
+            {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
           </div>
 
           {/* Category */}
@@ -167,9 +157,7 @@ export default function PostFormPage() {
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
-                  <SelectTrigger
-                    className={errors.category ? "border-destructive" : ""}
-                  >
+                  <SelectTrigger className={errors.category ? 'border-destructive' : ''}>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -180,11 +168,7 @@ export default function PostFormPage() {
                 </Select>
               )}
             />
-            {errors.category && (
-              <p className="text-xs text-destructive">
-                {errors.category.message}
-              </p>
-            )}
+            {errors.category && <p className="text-xs text-destructive">{errors.category.message}</p>}
           </div>
 
           {/* Tags */}
@@ -194,15 +178,11 @@ export default function PostFormPage() {
               id="tags"
               type="text"
               placeholder="e.g., react, typescript, tutorial"
-              {...register("tags")}
-              className={errors.tags ? "border-destructive" : ""}
+              {...register('tags')}
+              className={errors.tags ? 'border-destructive' : ''}
             />
-            <p className="text-xs text-muted-foreground">
-              Separate tags with commas. Maximum 5 tags.
-            </p>
-            {errors.tags && (
-              <p className="text-xs text-destructive">{errors.tags.message}</p>
-            )}
+            <p className="text-xs text-muted-foreground">Separate tags with commas. Maximum 5 tags.</p>
+            {errors.tags && <p className="text-xs text-destructive">{errors.tags.message}</p>}
           </div>
 
           {/* Body */}
@@ -214,29 +194,25 @@ export default function PostFormPage() {
               id="body"
               rows={12}
               placeholder="Enter post content (max 2000 characters)"
-              {...register("body")}
-              className={`resize-y ${errors.body ? "border-destructive" : ""}`}
+              {...register('body')}
+              className={`resize-y ${errors.body ? 'border-destructive' : ''}`}
             />
-            {errors.body && (
-              <p className="text-xs text-destructive">{errors.body.message}</p>
-            )}
+            {errors.body && <p className="text-xs text-destructive">{errors.body.message}</p>}
           </div>
 
           {/* Buttons */}
           <div className="flex gap-4 pt-4">
-            <Button type="submit" className="flex-1" disabled={isSubmitting}>
-              {isSubmitting
-                ? isEditing
-                  ? "Updating..."
-                  : "Creating..."
-                : isEditing
-                ? "Update Post"
-                : "Create Post"}
+            <Button
+              type="submit"
+              className="flex-1"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (isEditing ? 'Updating...' : 'Creating...') : isEditing ? 'Update Post' : 'Create Post'}
             </Button>
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate(isEditing ? `/posts/${id}` : "/posts")}
+              onClick={() => navigate(isEditing ? `/posts/${id}` : '/posts')}
             >
               Cancel
             </Button>
@@ -244,5 +220,5 @@ export default function PostFormPage() {
         </form>
       </div>
     </div>
-  );
+  )
 }

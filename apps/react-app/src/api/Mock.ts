@@ -17,14 +17,12 @@ import type {
   SnackImpactResponse,
   TopCoffeeBrandsResponse,
   WeeklyMoodTrendResponse,
-  WeeklyWorkoutTrendResponse,
-} from "./data-contracts";
-import { HttpClient } from "./http-client";
-import type { RequestParams } from "./http-client";
+  WeeklyWorkoutTrendResponse
+} from './data-contracts'
+import { HttpClient } from './http-client'
+import type { RequestParams } from './http-client'
 
-export class Mock<
-  SecurityDataType = unknown
-> extends HttpClient<SecurityDataType> {
+export class Mock<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
    * @description 서버 시작 시 생성된 고정 500개 데이터 중 앞에서부터 `count`개를 반환합니다. 항상 동일한 데이터셋에서 slice 되므로 요청마다 결과가 일관됩니다.
    *
@@ -41,24 +39,24 @@ export class Mock<
        * @default 300
        * @example 5
        */
-      count?: number;
+      count?: number
     },
     params: RequestParams = {}
   ) =>
     this.request<
       {
-        items?: Post[];
+        items?: Post[]
         /** @example 300 */
-        count?: number;
+        count?: number
       },
       any
     >({
       path: `/mock/posts`,
-      method: "GET",
+      method: 'GET',
       query: query,
-      format: "json",
-      ...params,
-    });
+      format: 'json',
+      ...params
+    })
   /**
    * No description
    *
@@ -69,10 +67,10 @@ export class Mock<
   topCoffeeBrandsList = (params: RequestParams = {}) =>
     this.request<TopCoffeeBrandsResponse, any>({
       path: `/mock/top-coffee-brands`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
+      method: 'GET',
+      format: 'json',
+      ...params
+    })
   /**
    * No description
    *
@@ -83,10 +81,10 @@ export class Mock<
   popularSnackBrandsList = (params: RequestParams = {}) =>
     this.request<PopularSnackBrandsResponse, any>({
       path: `/mock/popular-snack-brands`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
+      method: 'GET',
+      format: 'json',
+      ...params
+    })
   /**
    * No description
    *
@@ -97,10 +95,10 @@ export class Mock<
   weeklyMoodTrendList = (params: RequestParams = {}) =>
     this.request<WeeklyMoodTrendResponse, any>({
       path: `/mock/weekly-mood-trend`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
+      method: 'GET',
+      format: 'json',
+      ...params
+    })
   /**
    * No description
    *
@@ -111,10 +109,10 @@ export class Mock<
   weeklyWorkoutTrendList = (params: RequestParams = {}) =>
     this.request<WeeklyWorkoutTrendResponse, any>({
       path: `/mock/weekly-workout-trend`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
+      method: 'GET',
+      format: 'json',
+      ...params
+    })
   /**
    * No description
    *
@@ -125,10 +123,10 @@ export class Mock<
   coffeeConsumptionList = (params: RequestParams = {}) =>
     this.request<CoffeeConsumptionResponse, any>({
       path: `/mock/coffee-consumption`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
+      method: 'GET',
+      format: 'json',
+      ...params
+    })
   /**
    * No description
    *
@@ -139,8 +137,8 @@ export class Mock<
   snackImpactList = (params: RequestParams = {}) =>
     this.request<SnackImpactResponse, any>({
       path: `/mock/snack-impact`,
-      method: "GET",
-      format: "json",
-      ...params,
-    });
+      method: 'GET',
+      format: 'json',
+      ...params
+    })
 }

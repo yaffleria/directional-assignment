@@ -9,20 +9,20 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { CustomLegend } from "../CustomLegend/CustomLegend";
+  ResponsiveContainer
+} from 'recharts'
+import { CustomLegend } from '../CustomLegend/CustomLegend'
 
 interface BarDonutViewProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  coffeeBrands: any[] | undefined;
+  coffeeBrands: any[] | undefined
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  snackBrands: any[] | undefined;
-  customColors: Record<string, string>;
-  hiddenSeries: Set<string>;
-  toggleSeries: (dataKey: string) => void;
-  handleColorChange: (dataKey: string, color: string) => void;
-  COLORS: { primary: string[] };
+  snackBrands: any[] | undefined
+  customColors: Record<string, string>
+  hiddenSeries: Set<string>
+  toggleSeries: (dataKey: string) => void
+  handleColorChange: (dataKey: string, color: string) => void
+  COLORS: { primary: string[] }
 }
 
 export const BarDonutView = ({
@@ -32,19 +32,23 @@ export const BarDonutView = ({
   hiddenSeries,
   toggleSeries,
   handleColorChange,
-  COLORS,
+  COLORS
 }: BarDonutViewProps) => {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Coffee Brands */}
         <div className="bg-card rounded-lg border p-6 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">
-            Top Coffee Brands (Bar)
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <h3 className="text-lg font-semibold mb-4">Top Coffee Brands (Bar)</h3>
+          <ResponsiveContainer
+            width="100%"
+            height={300}
+          >
             <BarChart data={coffeeBrands || []}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                opacity={0.3}
+              />
               <XAxis dataKey="brand" />
               <YAxis />
               <Tooltip />
@@ -57,10 +61,10 @@ export const BarDonutView = ({
                   />
                 }
               />
-              {!hiddenSeries.has("Popularity") && (
+              {!hiddenSeries.has('Popularity') && (
                 <Bar
                   dataKey="popularity"
-                  fill={customColors["popularity"] || COLORS.primary[0]}
+                  fill={customColors['popularity'] || COLORS.primary[0]}
                   name="Popularity"
                   isAnimationActive={false}
                 />
@@ -69,10 +73,11 @@ export const BarDonutView = ({
           </ResponsiveContainer>
         </div>
         <div className="bg-card rounded-lg border p-6 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">
-            Top Coffee Brands (Donut)
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <h3 className="text-lg font-semibold mb-4">Top Coffee Brands (Donut)</h3>
+          <ResponsiveContainer
+            width="100%"
+            height={300}
+          >
             <PieChart>
               <Pie
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -88,10 +93,7 @@ export const BarDonutView = ({
                 {coffeeBrands?.map((entry, i) => (
                   <Cell
                     key={`cell-${i}`}
-                    fill={
-                      customColors[entry.brand] ||
-                      COLORS.primary[i % COLORS.primary.length]
-                    }
+                    fill={customColors[entry.brand] || COLORS.primary[i % COLORS.primary.length]}
                   />
                 ))}
               </Pie>
@@ -113,12 +115,16 @@ export const BarDonutView = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Snack Brands */}
         <div className="bg-card rounded-lg border p-6 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">
-            Popular Snack Brands (Bar)
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <h3 className="text-lg font-semibold mb-4">Popular Snack Brands (Bar)</h3>
+          <ResponsiveContainer
+            width="100%"
+            height={300}
+          >
             <BarChart data={snackBrands || []}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                opacity={0.3}
+              />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
@@ -131,10 +137,10 @@ export const BarDonutView = ({
                   />
                 }
               />
-              {!hiddenSeries.has("Share") && (
+              {!hiddenSeries.has('Share') && (
                 <Bar
                   dataKey="share"
-                  fill={customColors["share"] || COLORS.primary[1]}
+                  fill={customColors['share'] || COLORS.primary[1]}
                   name="Share"
                   isAnimationActive={false}
                 />
@@ -143,10 +149,11 @@ export const BarDonutView = ({
           </ResponsiveContainer>
         </div>
         <div className="bg-card rounded-lg border p-6 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">
-            Popular Snack Brands (Donut)
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <h3 className="text-lg font-semibold mb-4">Popular Snack Brands (Donut)</h3>
+          <ResponsiveContainer
+            width="100%"
+            height={300}
+          >
             <PieChart>
               <Pie
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -162,10 +169,7 @@ export const BarDonutView = ({
                 {snackBrands?.map((entry, i) => (
                   <Cell
                     key={`cell-${i}`}
-                    fill={
-                      customColors[entry.name] ||
-                      COLORS.primary[i % COLORS.primary.length]
-                    }
+                    fill={customColors[entry.name] || COLORS.primary[i % COLORS.primary.length]}
                   />
                 ))}
               </Pie>
@@ -184,5 +188,5 @@ export const BarDonutView = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

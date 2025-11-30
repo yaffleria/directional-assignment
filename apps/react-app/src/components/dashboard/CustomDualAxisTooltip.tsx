@@ -1,44 +1,38 @@
 interface TooltipProps {
-  active?: boolean;
+  active?: boolean
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  payload?: any[];
-  label?: string | number;
-  xAxisLabel?: string;
-  hoveredTeam?: string | null;
+  payload?: any[]
+  label?: string | number
+  xAxisLabel?: string
+  hoveredTeam?: string | null
 }
 
-export const CustomDualAxisTooltip = ({
-  active,
-  payload,
-  label,
-  xAxisLabel,
-  hoveredTeam,
-}: TooltipProps) => {
+export const CustomDualAxisTooltip = ({ active, payload, label, xAxisLabel, hoveredTeam }: TooltipProps) => {
   if (active && payload && payload.length) {
     // If no team is hovered, don't show tooltip (or show all? Requirement says "hovered team only")
     // If we strictly follow "show only hovered team data", we should return null if no team is hovered.
     // However, usually tooltips show something. But let's stick to the requirement:
     // "tooltip should show data for the hovered line's team"
-    if (!hoveredTeam) return null;
+    if (!hoveredTeam) return null
 
     // Group payload items by team
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const teamDataMap = new Map<string, any>();
+    const teamDataMap = new Map<string, any>()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     payload.forEach((item: any) => {
-      const name = item.name || "";
-      let teamName = "";
+      const name = item.name || ''
+      let teamName = ''
 
       // Extract team name from the dataKey
-      if (name.includes(" Bugs")) {
-        teamName = name.replace(" Bugs", "");
-      } else if (name.includes(" Productivity")) {
-        teamName = name.replace(" Productivity", "");
-      } else if (name.includes(" Meetings")) {
-        teamName = name.replace(" Meetings", "");
-      } else if (name.includes(" Morale")) {
-        teamName = name.replace(" Morale", "");
+      if (name.includes(' Bugs')) {
+        teamName = name.replace(' Bugs', '')
+      } else if (name.includes(' Productivity')) {
+        teamName = name.replace(' Productivity', '')
+      } else if (name.includes(' Meetings')) {
+        teamName = name.replace(' Meetings', '')
+      } else if (name.includes(' Morale')) {
+        teamName = name.replace(' Morale', '')
       }
 
       // Only process data for the hovered team
@@ -47,28 +41,28 @@ export const CustomDualAxisTooltip = ({
           teamDataMap.set(teamName, {
             teamName,
             color: item.color || item.stroke,
-            data: {},
-          });
+            data: {}
+          })
         }
 
-        const teamData = teamDataMap.get(teamName);
+        const teamData = teamDataMap.get(teamName)
 
-        if (name.includes(" Bugs")) {
-          teamData.data.bugs = item.value;
-        } else if (name.includes(" Productivity")) {
-          teamData.data.productivity = item.value;
-        } else if (name.includes(" Meetings")) {
-          teamData.data.meetings = item.value;
-        } else if (name.includes(" Morale")) {
-          teamData.data.morale = item.value;
+        if (name.includes(' Bugs')) {
+          teamData.data.bugs = item.value
+        } else if (name.includes(' Productivity')) {
+          teamData.data.productivity = item.value
+        } else if (name.includes(' Meetings')) {
+          teamData.data.meetings = item.value
+        } else if (name.includes(' Morale')) {
+          teamData.data.morale = item.value
         }
       }
-    });
+    })
 
-    const teams = Array.from(teamDataMap.values());
-    if (teams.length === 0) return null;
+    const teams = Array.from(teamDataMap.values())
+    if (teams.length === 0) return null
 
-    const hasCoffeeData = teams.some((t) => t.data.bugs !== undefined);
+    const hasCoffeeData = teams.some((t) => t.data.bugs !== undefined)
 
     return (
       <div className="bg-popover border rounded-md p-3 shadow-md text-sm min-w-[180px]">
@@ -81,7 +75,10 @@ export const CustomDualAxisTooltip = ({
               key={index}
               className="border-t pt-2 first:border-t-0 first:pt-0"
             >
-              <div className="font-bold mb-1.5" style={{ color: team.color }}>
+              <div
+                className="font-bold mb-1.5"
+                style={{ color: team.color }}
+              >
                 {team.teamName}
               </div>
               <div className="flex flex-col gap-1">
@@ -96,9 +93,7 @@ export const CustomDualAxisTooltip = ({
                           />
                           <span className="text-xs">Bugs</span>
                         </span>
-                        <span className="font-mono text-xs font-semibold">
-                          {team.data.bugs}
-                        </span>
+                        <span className="font-mono text-xs font-semibold">{team.data.bugs}</span>
                       </div>
                     )}
                     {team.data.productivity !== undefined && (
@@ -110,9 +105,7 @@ export const CustomDualAxisTooltip = ({
                           />
                           <span className="text-xs">Productivity</span>
                         </span>
-                        <span className="font-mono text-xs font-semibold">
-                          {team.data.productivity}
-                        </span>
+                        <span className="font-mono text-xs font-semibold">{team.data.productivity}</span>
                       </div>
                     )}
                   </>
@@ -127,9 +120,7 @@ export const CustomDualAxisTooltip = ({
                           />
                           <span className="text-xs">Meetings Missed</span>
                         </span>
-                        <span className="font-mono text-xs font-semibold">
-                          {team.data.meetings}
-                        </span>
+                        <span className="font-mono text-xs font-semibold">{team.data.meetings}</span>
                       </div>
                     )}
                     {team.data.morale !== undefined && (
@@ -141,9 +132,7 @@ export const CustomDualAxisTooltip = ({
                           />
                           <span className="text-xs">Morale</span>
                         </span>
-                        <span className="font-mono text-xs font-semibold">
-                          {team.data.morale}
-                        </span>
+                        <span className="font-mono text-xs font-semibold">{team.data.morale}</span>
                       </div>
                     )}
                   </>
@@ -153,7 +142,7 @@ export const CustomDualAxisTooltip = ({
           ))}
         </div>
       </div>
-    );
+    )
   }
-  return null;
-};
+  return null
+}

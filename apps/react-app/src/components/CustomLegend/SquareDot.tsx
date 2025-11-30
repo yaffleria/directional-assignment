@@ -1,11 +1,11 @@
 interface SquareDotProps {
-  cx?: number;
-  cy?: number;
-  fill?: string;
+  cx?: number
+  cy?: number
+  fill?: string
 }
 
 export const SquareDot = (props: SquareDotProps) => {
-  const { cx = 0, cy = 0, fill = "#000" } = props;
+  const { cx = 0, cy = 0, fill = '#000' } = props
   return (
     <rect
       x={cx - 4}
@@ -16,5 +16,5 @@ export const SquareDot = (props: SquareDotProps) => {
       stroke={fill}
       strokeWidth={0}
     />
-  );
-};
+  )
+}

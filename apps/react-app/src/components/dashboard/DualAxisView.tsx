@@ -1,32 +1,23 @@
-import { useState } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { CustomLegend } from "../CustomLegend/CustomLegend";
-import { SquareDot } from "../CustomLegend/SquareDot";
-import { CustomDualAxisTooltip } from "./CustomDualAxisTooltip";
+import { useState } from 'react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { CustomLegend } from '../CustomLegend/CustomLegend'
+import { SquareDot } from '../CustomLegend/SquareDot'
+import { CustomDualAxisTooltip } from './CustomDualAxisTooltip'
 
 interface DualAxisViewProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  coffeeChartData: any[];
+  coffeeChartData: any[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  snackChartData: any[];
+  snackChartData: any[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  coffeeConsumption: any;
+  coffeeConsumption: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  snackImpact: any;
-  customColors: Record<string, string>;
-  hiddenSeries: Set<string>;
-  toggleSeries: (dataKey: string) => void;
-  handleColorChange: (dataKey: string, color: string) => void;
-  COLORS: { primary: string[] };
+  snackImpact: any
+  customColors: Record<string, string>
+  hiddenSeries: Set<string>
+  toggleSeries: (dataKey: string) => void
+  handleColorChange: (dataKey: string, color: string) => void
+  COLORS: { primary: string[] }
 }
 
 export const DualAxisView = ({
@@ -38,60 +29,64 @@ export const DualAxisView = ({
   hiddenSeries,
   toggleSeries,
   handleColorChange,
-  COLORS,
+  COLORS
 }: DualAxisViewProps) => {
-  const [hoveredTeam, setHoveredTeam] = useState<string | null>(null);
+  const [hoveredTeam, setHoveredTeam] = useState<string | null>(null)
 
   const handleLineHover = (dataKey: string) => {
-    let teamName = "";
-    if (dataKey.includes(" Bugs")) teamName = dataKey.replace(" Bugs", "");
-    else if (dataKey.includes(" Productivity"))
-      teamName = dataKey.replace(" Productivity", "");
-    else if (dataKey.includes(" Meetings"))
-      teamName = dataKey.replace(" Meetings", "");
-    else if (dataKey.includes(" Morale"))
-      teamName = dataKey.replace(" Morale", "");
+    let teamName = ''
+    if (dataKey.includes(' Bugs')) teamName = dataKey.replace(' Bugs', '')
+    else if (dataKey.includes(' Productivity')) teamName = dataKey.replace(' Productivity', '')
+    else if (dataKey.includes(' Meetings')) teamName = dataKey.replace(' Meetings', '')
+    else if (dataKey.includes(' Morale')) teamName = dataKey.replace(' Morale', '')
 
-    setHoveredTeam(teamName);
-  };
+    setHoveredTeam(teamName)
+  }
 
   const handleLineLeave = () => {
-    setHoveredTeam(null);
-  };
+    setHoveredTeam(null)
+  }
 
   return (
     <div className="space-y-6">
       <div className="bg-card rounded-lg border p-6 shadow-sm">
-        <h3 className="text-lg font-semibold mb-4">
-          Coffee Consumption vs Bugs & Productivity
-        </h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={coffeeChartData} onMouseLeave={handleLineLeave}>
-            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+        <h3 className="text-lg font-semibold mb-4">Coffee Consumption vs Bugs & Productivity</h3>
+        <ResponsiveContainer
+          width="100%"
+          height={400}
+        >
+          <LineChart
+            data={coffeeChartData}
+            onMouseLeave={handleLineLeave}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              opacity={0.3}
+            />
             <XAxis
               dataKey="cups"
               type="number"
               label={{
-                value: "Coffee Cups",
-                position: "insideBottom",
-                offset: -5,
+                value: 'Coffee Cups',
+                position: 'insideBottom',
+                offset: -5
               }}
             />
             <YAxis
               yAxisId="left"
               label={{
-                value: "Bugs",
+                value: 'Bugs',
                 angle: -90,
-                position: "insideLeft",
+                position: 'insideLeft'
               }}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               label={{
-                value: "Productivity",
+                value: 'Productivity',
                 angle: 90,
-                position: "insideRight",
+                position: 'insideRight'
               }}
             />
             <Tooltip
@@ -128,7 +123,7 @@ export const DualAxisView = ({
                 hide={hiddenSeries.has(`${team.team} Bugs`)}
                 dot={{
                   r: 4,
-                  fill: customColors[`${team.team} Bugs`] || COLORS.primary[i],
+                  fill: customColors[`${team.team} Bugs`] || COLORS.primary[i]
                 }}
                 activeDot={{ r: 8 }}
                 isAnimationActive={false}
@@ -144,25 +139,14 @@ export const DualAxisView = ({
                 type="monotone"
                 dataKey={`${team.team} Productivity`}
                 name={`${team.team} Productivity`}
-                stroke={
-                  customColors[`${team.team} Productivity`] || COLORS.primary[i]
-                }
+                stroke={customColors[`${team.team} Productivity`] || COLORS.primary[i]}
                 strokeWidth={hoveredTeam === team.team ? 5 : 3}
                 strokeDasharray="5 5"
                 hide={hiddenSeries.has(`${team.team} Productivity`)}
-                dot={
-                  <SquareDot
-                    fill={
-                      customColors[`${team.team} Productivity`] ||
-                      COLORS.primary[i]
-                    }
-                  />
-                }
+                dot={<SquareDot fill={customColors[`${team.team} Productivity`] || COLORS.primary[i]} />}
                 activeDot={{ r: 8 }}
                 isAnimationActive={false}
-                onMouseEnter={() =>
-                  handleLineHover(`${team.team} Productivity`)
-                }
+                onMouseEnter={() => handleLineHover(`${team.team} Productivity`)}
                 onMouseLeave={handleLineLeave}
               />
             ))}
@@ -170,36 +154,43 @@ export const DualAxisView = ({
         </ResponsiveContainer>
       </div>
       <div className="bg-card rounded-lg border p-6 shadow-sm">
-        <h3 className="text-lg font-semibold mb-4">
-          Snack Impact on Meetings & Morale
-        </h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={snackChartData} onMouseLeave={handleLineLeave}>
-            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+        <h3 className="text-lg font-semibold mb-4">Snack Impact on Meetings & Morale</h3>
+        <ResponsiveContainer
+          width="100%"
+          height={400}
+        >
+          <LineChart
+            data={snackChartData}
+            onMouseLeave={handleLineLeave}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              opacity={0.3}
+            />
             <XAxis
               dataKey="snacks"
               type="number"
               label={{
-                value: "Snacks per Day",
-                position: "insideBottom",
-                offset: -5,
+                value: 'Snacks per Day',
+                position: 'insideBottom',
+                offset: -5
               }}
             />
             <YAxis
               yAxisId="left"
               label={{
-                value: "Meetings Missed",
+                value: 'Meetings Missed',
                 angle: -90,
-                position: "insideLeft",
+                position: 'insideLeft'
               }}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               label={{
-                value: "Morale",
+                value: 'Morale',
                 angle: 90,
-                position: "insideRight",
+                position: 'insideRight'
               }}
             />
             <Tooltip
@@ -231,15 +222,12 @@ export const DualAxisView = ({
                 type="monotone"
                 dataKey={`${dept.name} Meetings`}
                 name={`${dept.name} Meetings`}
-                stroke={
-                  customColors[`${dept.name} Meetings`] || COLORS.primary[i]
-                }
+                stroke={customColors[`${dept.name} Meetings`] || COLORS.primary[i]}
                 strokeWidth={hoveredTeam === dept.name ? 5 : 3}
                 hide={hiddenSeries.has(`${dept.name} Meetings`)}
                 dot={{
                   r: 4,
-                  fill:
-                    customColors[`${dept.name} Meetings`] || COLORS.primary[i],
+                  fill: customColors[`${dept.name} Meetings`] || COLORS.primary[i]
                 }}
                 activeDot={{ r: 8 }}
                 onMouseEnter={() => handleLineHover(`${dept.name} Meetings`)}
@@ -254,19 +242,11 @@ export const DualAxisView = ({
                 type="monotone"
                 dataKey={`${dept.name} Morale`}
                 name={`${dept.name} Morale`}
-                stroke={
-                  customColors[`${dept.name} Morale`] || COLORS.primary[i]
-                }
+                stroke={customColors[`${dept.name} Morale`] || COLORS.primary[i]}
                 strokeWidth={hoveredTeam === dept.name ? 5 : 3}
                 strokeDasharray="5 5"
                 hide={hiddenSeries.has(`${dept.name} Morale`)}
-                dot={
-                  <SquareDot
-                    fill={
-                      customColors[`${dept.name} Morale`] || COLORS.primary[i]
-                    }
-                  />
-                }
+                dot={<SquareDot fill={customColors[`${dept.name} Morale`] || COLORS.primary[i]} />}
                 activeDot={{ r: 8 }}
                 onMouseEnter={() => handleLineHover(`${dept.name} Morale`)}
                 onMouseLeave={handleLineLeave}
@@ -276,5 +256,5 @@ export const DualAxisView = ({
         </ResponsiveContainer>
       </div>
     </div>
-  );
-};
+  )
+}

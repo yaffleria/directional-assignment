@@ -1,58 +1,74 @@
-import { useState } from "react";
-import { Circle, Square } from "lucide-react";
-import { Button } from "@repo/components";
+import { useState } from 'react'
+import { Circle, Square } from 'lucide-react'
+import { Button } from '@repo/components'
 
 interface LegendItem {
-  value: string;
-  type?: "line" | "monotone" | "area" | "bar";
-  color?: string;
+  value: string
+  type?: 'line' | 'monotone' | 'area' | 'bar'
+  color?: string
   payload?: {
-    strokeDasharray?: string;
-    value: string;
-    dataKey?: string;
-    color?: string;
-  };
-  dataKey?: string;
+    strokeDasharray?: string
+    value: string
+    dataKey?: string
+    color?: string
+  }
+  dataKey?: string
 }
 
 interface CustomLegendProps {
-  payload?: LegendItem[];
-  onToggle?: (dataKey: string) => void;
-  hiddenSeries?: Set<string>;
-  markerShape?: "circle" | "square" | "auto";
-  onColorChange?: (dataKey: string, color: string) => void;
+  payload?: LegendItem[]
+  onToggle?: (dataKey: string) => void
+  hiddenSeries?: Set<string>
+  markerShape?: 'circle' | 'square' | 'auto'
+  onColorChange?: (dataKey: string, color: string) => void
 }
 
 export function CustomLegend({
   payload = [],
   onToggle,
   hiddenSeries = new Set(),
-  markerShape = "auto",
-  onColorChange,
+  markerShape = 'auto',
+  onColorChange
 }: CustomLegendProps) {
-  const [colorPicker, setColorPicker] = useState<string | null>(null);
+  const [colorPicker, setColorPicker] = useState<string | null>(null)
 
   const getShape = (item: LegendItem) => {
-    if (markerShape === "circle")
-      return <Circle size={12} fill="currentColor" />;
-    if (markerShape === "square")
-      return <Square size={12} fill="currentColor" />;
+    if (markerShape === 'circle')
+      return (
+        <Circle
+          size={12}
+          fill="currentColor"
+        />
+      )
+    if (markerShape === 'square')
+      return (
+        <Square
+          size={12}
+          fill="currentColor"
+        />
+      )
 
     // Auto: Use dash array to determine shape
-    const isDashed = item.payload?.strokeDasharray === "5 5";
+    const isDashed = item.payload?.strokeDasharray === '5 5'
     return isDashed ? (
-      <Square size={12} fill="currentColor" />
+      <Square
+        size={12}
+        fill="currentColor"
+      />
     ) : (
-      <Circle size={12} fill="currentColor" />
-    );
-  };
+      <Circle
+        size={12}
+        fill="currentColor"
+      />
+    )
+  }
 
   return (
     <div className="flex flex-wrap gap-4 justify-center mt-4">
       {payload.map((entry, index) => {
-        const dataKey = entry.dataKey || entry.payload?.dataKey || entry.value;
-        const isHidden = hiddenSeries.has(dataKey);
-        const color = entry.color || entry.payload?.color || "#8884d8";
+        const dataKey = entry.dataKey || entry.payload?.dataKey || entry.value
+        const isHidden = hiddenSeries.has(dataKey)
+        const color = entry.color || entry.payload?.color || '#8884d8'
 
         return (
           <div
@@ -63,19 +79,13 @@ export function CustomLegend({
             <div
               className="relative"
               style={{
-                color: isHidden ? "#ccc" : color,
-                opacity: isHidden ? 0.5 : 1,
+                color: isHidden ? '#ccc' : color,
+                opacity: isHidden ? 0.5 : 1
               }}
             >
               {getShape(entry)}
             </div>
-            <span
-              className={`text-sm ${
-                isHidden
-                  ? "text-muted-foreground line-through"
-                  : "text-foreground"
-              }`}
-            >
+            <span className={`text-sm ${isHidden ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
               {entry.value}
             </span>
             {!isHidden && (
@@ -84,8 +94,8 @@ export function CustomLegend({
                 size="sm"
                 className="h-4 w-4 p-0 ml-1"
                 onClick={(e) => {
-                  e.stopPropagation();
-                  setColorPicker(colorPicker === dataKey ? null : dataKey);
+                  e.stopPropagation()
+                  setColorPicker(colorPicker === dataKey ? null : dataKey)
                 }}
               >
                 <div
@@ -100,15 +110,15 @@ export function CustomLegend({
                   type="color"
                   defaultValue={color}
                   onChange={(e) => {
-                    onColorChange?.(dataKey, e.target.value);
+                    onColorChange?.(dataKey, e.target.value)
                   }}
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
             )}
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

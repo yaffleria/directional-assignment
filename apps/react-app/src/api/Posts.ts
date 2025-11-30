@@ -10,20 +10,12 @@
  * ---------------------------------------------------------------
  */
 
-import { Category, SortField, SortOrder } from "./data-contracts";
-import type {
-  DeleteResponse,
-  Post,
-  PostCreateRequest,
-  PostListResponse,
-  PostUpdateRequest,
-} from "./data-contracts";
-import { ContentType, HttpClient } from "./http-client";
-import type { RequestParams } from "./http-client";
+import { Category, SortField, SortOrder } from './data-contracts'
+import type { DeleteResponse, Post, PostCreateRequest, PostListResponse, PostUpdateRequest } from './data-contracts'
+import { ContentType, HttpClient } from './http-client'
+import type { RequestParams } from './http-client'
 
-export class Posts<
-  SecurityDataType = unknown
-> extends HttpClient<SecurityDataType> {
+export class Posts<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
    * @description 양방향 커서 기반 페이지네이션(prevCursor/nextCursor)을 지원합니다. prev/next를 동시에 전달할 수 없습니다.
    *
@@ -40,33 +32,33 @@ export class Posts<
        * @max 100
        * @default 10
        */
-      limit?: number;
+      limit?: number
       /** 이전 페이지용 커서(opaque). 이전 응답의 prevCursor를 그대로 전달. nextCursor와 동시 사용 불가. */
-      prevCursor?: string;
+      prevCursor?: string
       /** 다음 페이지용 커서(opaque). 이전 응답의 nextCursor를 그대로 전달. prevCursor와 동시 사용 불가. */
-      nextCursor?: string;
+      nextCursor?: string
       /** 정렬 필드 */
-      sort?: SortField;
+      sort?: SortField
       /** 정렬 방향 */
-      order?: SortOrder;
-      category?: Category;
+      order?: SortOrder
+      category?: Category
       /** @format date-time */
-      from?: string;
+      from?: string
       /** @format date-time */
-      to?: string;
+      to?: string
       /** 제목/본문 검색어 (공백으로 여러 단어 입력 시 AND 매칭) */
-      search?: string;
+      search?: string
     },
     params: RequestParams = {}
   ) =>
     this.request<PostListResponse, void>({
       path: `/posts`,
-      method: "GET",
+      method: 'GET',
       query: query,
       secure: true,
-      format: "json",
-      ...params,
-    });
+      format: 'json',
+      ...params
+    })
   /**
    * No description
    *
@@ -78,13 +70,13 @@ export class Posts<
   postsCreate = (data: PostCreateRequest, params: RequestParams = {}) =>
     this.request<Post, void>({
       path: `/posts`,
-      method: "POST",
+      method: 'POST',
       body: data,
       secure: true,
       type: ContentType.Json,
-      format: "json",
-      ...params,
-    });
+      format: 'json',
+      ...params
+    })
   /**
    * @description JWT 소유자의 모든 포스트를 삭제합니다.
    *
@@ -96,11 +88,11 @@ export class Posts<
   postsDelete = (params: RequestParams = {}) =>
     this.request<DeleteResponse, void>({
       path: `/posts`,
-      method: "DELETE",
+      method: 'DELETE',
       secure: true,
-      format: "json",
-      ...params,
-    });
+      format: 'json',
+      ...params
+    })
   /**
    * No description
    *
@@ -112,11 +104,11 @@ export class Posts<
   postsDetail = (id: string, params: RequestParams = {}) =>
     this.request<Post, void>({
       path: `/posts/${id}`,
-      method: "GET",
+      method: 'GET',
       secure: true,
-      format: "json",
-      ...params,
-    });
+      format: 'json',
+      ...params
+    })
   /**
    * @description 필요한 필드만 부분 업데이트합니다. 최소 1개 필드가 필요합니다.
    *
@@ -125,20 +117,16 @@ export class Posts<
    * @request PATCH:/posts/{id}
    * @secure
    */
-  postsPartialUpdate = (
-    id: string,
-    data: PostUpdateRequest,
-    params: RequestParams = {}
-  ) =>
+  postsPartialUpdate = (id: string, data: PostUpdateRequest, params: RequestParams = {}) =>
     this.request<Post, void>({
       path: `/posts/${id}`,
-      method: "PATCH",
+      method: 'PATCH',
       body: data,
       secure: true,
       type: ContentType.Json,
-      format: "json",
-      ...params,
-    });
+      format: 'json',
+      ...params
+    })
   /**
    * No description
    *
@@ -152,9 +140,9 @@ export class Posts<
   postsDelete2 = (id: string, params: RequestParams = {}) =>
     this.request<DeleteResponse, void>({
       path: `/posts/${id}`,
-      method: "DELETE",
+      method: 'DELETE',
       secure: true,
-      format: "json",
-      ...params,
-    });
+      format: 'json',
+      ...params
+    })
 }

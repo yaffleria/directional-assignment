@@ -10,12 +10,10 @@
  * ---------------------------------------------------------------
  */
 
-import { HttpClient } from "./http-client";
-import type { RequestParams } from "./http-client";
+import { HttpClient } from './http-client'
+import type { RequestParams } from './http-client'
 
-export class Health<
-  SecurityDataType = unknown
-> extends HttpClient<SecurityDataType> {
+export class Health<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
@@ -26,7 +24,7 @@ export class Health<
   healthList = (params: RequestParams = {}) =>
     this.request<void, any>({
       path: `/health`,
-      method: "GET",
-      ...params,
-    });
+      method: 'GET',
+      ...params
+    })
 }

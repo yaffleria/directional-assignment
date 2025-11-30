@@ -1,102 +1,87 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import type { Post } from "../../api/data-contracts";
-import { CategoryBadge } from "../CategoryBadge/CategoryBadge";
-import { formatDate } from "../../lib/date";
-import { Button } from "@repo/components";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from "@repo/components";
-import { Edit, Trash2, Settings } from "lucide-react";
+import { useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import type { Post } from '../../api/data-contracts'
+import { CategoryBadge } from '../CategoryBadge/CategoryBadge'
+import { formatDate } from '../../lib/date'
+import { Button } from '@repo/components'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuTrigger } from '@repo/components'
+import { Edit, Trash2, Settings } from 'lucide-react'
 
 interface PostsTableProps {
-  posts: Post[];
-  onDelete: (id: string) => void;
-  isDeleting: boolean;
+  posts: Post[]
+  onDelete: (id: string) => void
+  isDeleting: boolean
 }
 
-type ColumnId =
-  | "id"
-  | "title"
-  | "category"
-  | "createdAt"
-  | "userId"
-  | "actions";
+type ColumnId = 'id' | 'title' | 'category' | 'createdAt' | 'userId' | 'actions'
 
 interface ColumnDef {
-  id: ColumnId;
-  label: string;
-  minWidth: number;
+  id: ColumnId
+  label: string
+  minWidth: number
 }
 
 const COLUMNS: ColumnDef[] = [
-  { id: "id", label: "ID", minWidth: 80 },
-  { id: "title", label: "Title", minWidth: 200 },
-  { id: "category", label: "Category", minWidth: 100 },
-  { id: "userId", label: "Author", minWidth: 100 },
-  { id: "createdAt", label: "Date", minWidth: 150 },
-  { id: "actions", label: "Actions", minWidth: 100 },
-];
+  { id: 'id', label: 'ID', minWidth: 80 },
+  { id: 'title', label: 'Title', minWidth: 200 },
+  { id: 'category', label: 'Category', minWidth: 100 },
+  { id: 'userId', label: 'Author', minWidth: 100 },
+  { id: 'createdAt', label: 'Date', minWidth: 150 },
+  { id: 'actions', label: 'Actions', minWidth: 100 }
+]
 
 export function PostsTable({ posts, onDelete, isDeleting }: PostsTableProps) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({
     id: 100,
     title: 400,
     category: 120,
     userId: 150,
     createdAt: 180,
-    actions: 120,
-  });
+    actions: 120
+  })
   const [visibleColumns, setVisibleColumns] = useState<ColumnId[]>([
-    "title",
-    "category",
-    "userId",
-    "createdAt",
-    "actions",
-  ]);
+    'title',
+    'category',
+    'userId',
+    'createdAt',
+    'actions'
+  ])
   const resizingRef = useRef<{
-    columnId: string;
-    startX: number;
-    startWidth: number;
-  } | null>(null);
+    columnId: string
+    startX: number
+    startWidth: number
+  } | null>(null)
 
   const handleMouseDown = (e: React.MouseEvent, columnId: string) => {
-    e.preventDefault();
+    e.preventDefault()
     resizingRef.current = {
       columnId,
       startX: e.clientX,
-      startWidth: columnWidths[columnId],
-    };
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-  };
+      startWidth: columnWidths[columnId]
+    }
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+  }
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!resizingRef.current) return;
-    const { columnId, startX, startWidth } = resizingRef.current;
-    const diff = e.clientX - startX;
-    const newWidth = Math.max(50, startWidth + diff);
-    setColumnWidths((prev) => ({ ...prev, [columnId]: newWidth }));
-  };
+    if (!resizingRef.current) return
+    const { columnId, startX, startWidth } = resizingRef.current
+    const diff = e.clientX - startX
+    const newWidth = Math.max(50, startWidth + diff)
+    setColumnWidths((prev) => ({ ...prev, [columnId]: newWidth }))
+  }
 
   const handleMouseUp = () => {
-    resizingRef.current = null;
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
-  };
+    resizingRef.current = null
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.removeEventListener('mouseup', handleMouseUp)
+  }
 
   const toggleColumn = (columnId: ColumnId) => {
-    if (columnId === "actions") return; // Actions always visible
-    setVisibleColumns((prev) =>
-      prev.includes(columnId)
-        ? prev.filter((id) => id !== columnId)
-        : [...prev, columnId]
-    );
-  };
+    if (columnId === 'actions') return // Actions always visible
+    setVisibleColumns((prev) => (prev.includes(columnId) ? prev.filter((id) => id !== columnId) : [...prev, columnId]))
+  }
 
   return (
     <div className="space-y-4">
@@ -112,8 +97,11 @@ export function PostsTable({ posts, onDelete, isDeleting }: PostsTableProps) {
               Columns
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            {COLUMNS.filter((col) => col.id !== "actions").map((col) => (
+          <DropdownMenuContent
+            align="end"
+            className="w-48"
+          >
+            {COLUMNS.filter((col) => col.id !== 'actions').map((col) => (
               <DropdownMenuCheckboxItem
                 key={col.id}
                 checked={visibleColumns.includes(col.id)}
@@ -130,36 +118,37 @@ export function PostsTable({ posts, onDelete, isDeleting }: PostsTableProps) {
         <table className="w-full text-sm text-left">
           <thead className="bg-muted/50 text-muted-foreground font-medium">
             <tr>
-              {COLUMNS.filter((col) => visibleColumns.includes(col.id)).map(
-                (col) => (
-                  <th
-                    key={col.id}
-                    className="relative px-4 py-3 select-none"
-                    style={{ width: columnWidths[col.id] }}
-                  >
-                    <div className="flex items-center justify-between">
-                      {col.label}
-                      {col.id !== "actions" && (
-                        <div
-                          className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/50"
-                          onMouseDown={(e) => handleMouseDown(e, col.id)}
-                        />
-                      )}
-                    </div>
-                  </th>
-                )
-              )}
+              {COLUMNS.filter((col) => visibleColumns.includes(col.id)).map((col) => (
+                <th
+                  key={col.id}
+                  className="relative px-4 py-3 select-none"
+                  style={{ width: columnWidths[col.id] }}
+                >
+                  <div className="flex items-center justify-between">
+                    {col.label}
+                    {col.id !== 'actions' && (
+                      <div
+                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/50"
+                        onMouseDown={(e) => handleMouseDown(e, col.id)}
+                      />
+                    )}
+                  </div>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y">
             {posts.map((post) => (
-              <tr key={post.id} className="hover:bg-muted/50 transition-colors">
-                {visibleColumns.includes("id") && (
+              <tr
+                key={post.id}
+                className="hover:bg-muted/50 transition-colors"
+              >
+                {visibleColumns.includes('id') && (
                   <td className="px-4 py-3 font-mono text-xs text-muted-foreground truncate max-w-[100px]">
                     {post.id}
                   </td>
                 )}
-                {visibleColumns.includes("title") && (
+                {visibleColumns.includes('title') && (
                   <td className="px-4 py-3">
                     <span
                       className="font-medium cursor-pointer hover:underline"
@@ -169,22 +158,18 @@ export function PostsTable({ posts, onDelete, isDeleting }: PostsTableProps) {
                     </span>
                   </td>
                 )}
-                {visibleColumns.includes("category") && (
+                {visibleColumns.includes('category') && (
                   <td className="px-4 py-3">
                     <CategoryBadge category={post.category} />
                   </td>
                 )}
-                {visibleColumns.includes("userId") && (
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {post.userId}
-                  </td>
+                {visibleColumns.includes('userId') && (
+                  <td className="px-4 py-3 text-muted-foreground">{post.userId}</td>
                 )}
-                {visibleColumns.includes("createdAt") && (
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {formatDate(post.createdAt)}
-                  </td>
+                {visibleColumns.includes('createdAt') && (
+                  <td className="px-4 py-3 text-muted-foreground">{formatDate(post.createdAt)}</td>
                 )}
-                {visibleColumns.includes("actions") && (
+                {visibleColumns.includes('actions') && (
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Button
@@ -213,5 +198,5 @@ export function PostsTable({ posts, onDelete, isDeleting }: PostsTableProps) {
         </table>
       </div>
     </div>
-  );
+  )
 }

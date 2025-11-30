@@ -26,25 +26,15 @@
     "schemas": {
       "Category": {
         "type": "string",
-        "enum": [
-          "NOTICE",
-          "QNA",
-          "FREE"
-        ]
+        "enum": ["NOTICE", "QNA", "FREE"]
       },
       "SortField": {
         "type": "string",
-        "enum": [
-          "createdAt",
-          "title"
-        ]
+        "enum": ["createdAt", "title"]
       },
       "SortOrder": {
         "type": "string",
-        "enum": [
-          "asc",
-          "desc"
-        ]
+        "enum": ["asc", "desc"]
       },
       "User": {
         "type": "object",
@@ -86,32 +76,18 @@
             "items": {
               "type": "string"
             },
-            "example": [
-              "react",
-              "ts"
-            ]
+            "example": ["react", "ts"]
           },
           "createdAt": {
             "type": "string",
             "format": "date-time"
           }
         },
-        "required": [
-          "id",
-          "userId",
-          "title",
-          "body",
-          "category",
-          "tags",
-          "createdAt"
-        ]
+        "required": ["id", "userId", "title", "body", "category", "tags", "createdAt"]
       },
       "LoginRequest": {
         "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
+        "required": ["email", "password"],
         "properties": {
           "email": {
             "type": "string",
@@ -136,11 +112,7 @@
       },
       "PostCreateRequest": {
         "type": "object",
-        "required": [
-          "title",
-          "body",
-          "category"
-        ],
+        "required": ["title", "body", "category"],
         "properties": {
           "title": {
             "type": "string",
@@ -232,11 +204,7 @@
             "maximum": 100
           }
         },
-        "required": [
-          "cups",
-          "bugs",
-          "productivity"
-        ]
+        "required": ["cups", "bugs", "productivity"]
       },
       "CoffeeTeam": {
         "type": "object",
@@ -252,10 +220,7 @@
             }
           }
         },
-        "required": [
-          "team",
-          "series"
-        ]
+        "required": ["team", "series"]
       },
       "CoffeeConsumptionResponse": {
         "type": "object",
@@ -388,12 +353,7 @@
             "maximum": 100
           }
         },
-        "required": [
-          "week",
-          "happy",
-          "tired",
-          "stressed"
-        ]
+        "required": ["week", "happy", "tired", "stressed"]
       },
       "WeeklyMoodTrendResponse": {
         "type": "array",
@@ -447,10 +407,7 @@
             "maximum": 100
           }
         },
-        "required": [
-          "brand",
-          "popularity"
-        ]
+        "required": ["brand", "popularity"]
       },
       "TopCoffeeBrandsResponse": {
         "type": "array",
@@ -493,10 +450,7 @@
             "example": 1
           }
         },
-        "required": [
-          "ok",
-          "deleted"
-        ]
+        "required": ["ok", "deleted"]
       },
       "SnackImpactDataPoint": {
         "type": "object",
@@ -518,11 +472,7 @@
             "maximum": 100
           }
         },
-        "required": [
-          "snacks",
-          "meetingsMissed",
-          "morale"
-        ]
+        "required": ["snacks", "meetingsMissed", "morale"]
       },
       "SnackImpactDepartment": {
         "type": "object",
@@ -538,10 +488,7 @@
             }
           }
         },
-        "required": [
-          "name",
-          "metrics"
-        ]
+        "required": ["name", "metrics"]
       },
       "SnackImpactResponse": {
         "type": "object",
@@ -671,12 +618,7 @@
             "minimum": 0
           }
         },
-        "required": [
-          "week",
-          "running",
-          "cycling",
-          "stretching"
-        ]
+        "required": ["week", "running", "cycling", "stretching"]
       },
       "WeeklyWorkoutTrendResponse": {
         "type": "array",
@@ -730,10 +672,7 @@
             "maximum": 100
           }
         },
-        "required": [
-          "name",
-          "share"
-        ]
+        "required": ["name", "share"]
       },
       "PopularSnackBrandsResponse": {
         "type": "array",
@@ -1172,9 +1111,7 @@
                           "title": "샘플 포스트 #1",
                           "body": "이것은 고정된 테스트용 포스트 본문입니다. (1)번째 게시글.",
                           "category": "NOTICE",
-                          "tags": [
-                            "react"
-                          ],
+                          "tags": ["react"],
                           "createdAt": "2025-10-22T11:40:00.000Z"
                         },
                         {
@@ -1183,9 +1120,7 @@
                           "title": "샘플 포스트 #2",
                           "body": "이것은 고정된 테스트용 포스트 본문입니다. (2)번째 게시글.",
                           "category": "QNA",
-                          "tags": [
-                            "typescript"
-                          ],
+                          "tags": ["typescript"],
                           "createdAt": "2025-10-22T10:40:00.000Z"
                         },
                         {
@@ -1194,9 +1129,7 @@
                           "title": "샘플 포스트 #3",
                           "body": "이것은 고정된 테스트용 포스트 본문입니다. (3)번째 게시글.",
                           "category": "FREE",
-                          "tags": [
-                            "nextjs"
-                          ],
+                          "tags": ["nextjs"],
                           "createdAt": "2025-10-22T09:40:00.000Z"
                         }
                       ],

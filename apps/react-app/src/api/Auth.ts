@@ -10,13 +10,11 @@
  * ---------------------------------------------------------------
  */
 
-import type { LoginRequest, LoginResponse } from "./data-contracts";
-import { ContentType, HttpClient } from "./http-client";
-import type { RequestParams } from "./http-client";
+import type { LoginRequest, LoginResponse } from './data-contracts'
+import { ContentType, HttpClient } from './http-client'
+import type { RequestParams } from './http-client'
 
-export class Auth<
-  SecurityDataType = unknown
-> extends HttpClient<SecurityDataType> {
+export class Auth<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
   /**
    * No description
    *
@@ -27,10 +25,10 @@ export class Auth<
   loginCreate = (data: LoginRequest, params: RequestParams = {}) =>
     this.request<LoginResponse, void>({
       path: `/auth/login`,
-      method: "POST",
+      method: 'POST',
       body: data,
       type: ContentType.Json,
-      format: "json",
-      ...params,
-    });
+      format: 'json',
+      ...params
+    })
 }
