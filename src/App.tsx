@@ -5,7 +5,7 @@ import PostsListPage from "./pages/PostsListPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import PostFormPage from "./pages/PostFormPage";
 import DashboardPage from "./pages/DashboardPage";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ProtectedRoute } from "./components/layout/ProtectedRoute";
 
 function App() {
   return (

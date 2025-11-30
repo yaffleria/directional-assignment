@@ -19,7 +19,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Button } from "../components/ui/Button/Button";
+import { Button } from "../components/Button/Button";
 import { PageHeader } from "../components/layout/PageHeader/PageHeader";
 import { ArrowLeft } from "lucide-react";
 
@@ -137,7 +137,8 @@ export default function DashboardPage() {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={snackBrands || []}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    data={(snackBrands || []) as any}
                     dataKey="share"
                     nameKey="name"
                     cx="50%"

@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, type SignupFormData } from "../schema/signup.schema";
-import { Button } from "../components/ui/Button/Button";
-import { Input } from "../components/ui/Input/Input";
-import { Label } from "../components/ui/Label/Label";
+import { Button } from "../components/Button/Button";
+import { Input } from "../components/Input/Input";
+import { Label } from "../components/Label/Label";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { AuthLayout } from "../components/layout/AuthLayout/AuthLayout";
