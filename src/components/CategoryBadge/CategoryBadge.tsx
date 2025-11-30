@@ -1,17 +1,19 @@
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import type { Category } from "../../api/data-contracts";
 import type { CategoryBadgeProps } from "./CategoryBadge.types";
 
 export function CategoryBadge({ category }: CategoryBadgeProps) {
-  const colorClasses = {
-    NOTICE: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-    QNA: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-    FREE: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+  const colorClasses: Record<Category, string> = {
+    NOTICE:
+      "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border-red-200",
+    QNA: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200",
+    FREE: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-green-200",
   };
 
   return (
-    <span
-      className={`inline-block px-2 py-1 text-xs font-semibold rounded ${colorClasses[category]}`}
-    >
+    <Badge variant="outline" className={cn(colorClasses[category])}>
       {category}
-    </span>
+    </Badge>
   );
 }

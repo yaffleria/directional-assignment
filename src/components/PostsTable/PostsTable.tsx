@@ -3,8 +3,14 @@ import { useNavigate } from "react-router-dom";
 import type { Post } from "../../api/data-contracts";
 import { CategoryBadge } from "../CategoryBadge/CategoryBadge";
 import { formatDate } from "../../lib/date";
-import { Button } from "../Button/Button";
-import { Edit, Trash2, Settings, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Edit, Trash2, Settings } from "lucide-react";
 
 interface PostsTableProps {
   posts: Post[];
@@ -52,7 +58,6 @@ export function PostsTable({ posts, onDelete, isDeleting }: PostsTableProps) {
     "createdAt",
     "actions",
   ]);
-  const [showColumnSelector, setShowColumnSelector] = useState(false);
   const resizingRef = useRef<{
     columnId: string;
     startX: number;
@@ -95,36 +100,30 @@ export function PostsTable({ posts, onDelete, isDeleting }: PostsTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end relative">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowColumnSelector(!showColumnSelector)}
-          className="flex items-center gap-2"
-        >
-          <Settings size={16} />
-          Columns
-        </Button>
-        {showColumnSelector && (
-          <div className="absolute right-0 top-10 z-10 w-48 rounded-md border bg-popover p-2 shadow-md bg-white">
-            <div className="space-y-1">
-              {COLUMNS.filter((col) => col.id !== "actions").map((col) => (
-                <div
-                  key={col.id}
-                  className="flex items-center gap-2 rounded-sm px-2 py-1.5 hover:bg-accent cursor-pointer"
-                  onClick={() => toggleColumn(col.id)}
-                >
-                  {visibleColumns.includes(col.id) ? (
-                    <Eye size={16} className="text-primary" />
-                  ) : (
-                    <EyeOff size={16} className="text-muted-foreground" />
-                  )}
-                  <span className="text-sm">{col.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+      <div className="flex justify-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Settings size={16} />
+              Columns
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            {COLUMNS.filter((col) => col.id !== "actions").map((col) => (
+              <DropdownMenuCheckboxItem
+                key={col.id}
+                checked={visibleColumns.includes(col.id)}
+                onCheckedChange={() => toggleColumn(col.id)}
+              >
+                {col.label}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="rounded-md border overflow-x-auto">
