@@ -20,6 +20,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Button } from "../components/ui/Button";
+import { PageHeader } from "../components/layout/PageHeader";
 import { ArrowLeft } from "lucide-react";
 
 const COLORS = {
@@ -66,19 +67,17 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/posts")}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft size={18} /> Back to Posts
-          </Button>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <div className="w-20"></div>
-        </div>
-      </header>
+      <PageHeader>
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/posts")}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft size={18} /> Back to Posts
+        </Button>
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div className="w-20"></div>
+      </PageHeader>
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6 flex gap-2 flex-wrap">
@@ -138,7 +137,7 @@ export default function DashboardPage() {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={snackBrands as any}
+                    data={snackBrands || []}
                     dataKey="share"
                     nameKey="name"
                     cx="50%"
@@ -348,7 +347,7 @@ export default function DashboardPage() {
                   Top Coffee Brands
                 </h3>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={coffeeBrands as any}>
+                  <BarChart data={coffeeBrands || []}>
                     <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                     <XAxis dataKey="brand" />
                     <YAxis />
@@ -360,7 +359,7 @@ export default function DashboardPage() {
               <div className="bg-card rounded-lg border p-6 shadow-sm">
                 <h3 className="text-lg font-semibold mb-4">Snack Brands</h3>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={snackBrands as any}>
+                  <BarChart data={snackBrands || []}>
                     <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                     <XAxis dataKey="name" />
                     <YAxis />
