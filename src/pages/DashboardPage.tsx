@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
@@ -33,7 +33,7 @@ const COLORS = {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const [activeView, setActiveView] = useState<1 | 2 | 3 | 4>(1);
+  const [activeView, setActiveView] = useState<1 | 2 | 3>(1);
   const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set());
   const [customColors, setCustomColors] = useState<Record<string, string>>({});
 
@@ -76,6 +76,36 @@ export default function DashboardPage() {
     stretching: workoutTrend?.[index]?.stretching || 0,
   }));
 
+  const coffeeChartData = useMemo(() => {
+    if (!coffeeConsumption?.teams) return [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dataMap = new Map<number, any>();
+    coffeeConsumption.teams.forEach((team) => {
+      team.series.forEach((point) => {
+        const existing = dataMap.get(point.cups) || { cups: point.cups };
+        existing[`${team.team} Productivity`] = point.productivity;
+        existing[`${team.team} Bugs`] = point.bugs;
+        dataMap.set(point.cups, existing);
+      });
+    });
+    return Array.from(dataMap.values()).sort((a, b) => a.cups - b.cups);
+  }, [coffeeConsumption]);
+
+  const snackChartData = useMemo(() => {
+    if (!snackImpact?.departments) return [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dataMap = new Map<number, any>();
+    snackImpact.departments.forEach((dept) => {
+      dept.metrics.forEach((point) => {
+        const existing = dataMap.get(point.snacks) || { snacks: point.snacks };
+        existing[`${dept.name} Morale`] = point.morale;
+        existing[`${dept.name} Meetings`] = point.meetingsMissed;
+        dataMap.set(point.snacks, existing);
+      });
+    });
+    return Array.from(dataMap.values()).sort((a, b) => a.snacks - b.snacks);
+  }, [snackImpact]);
+
   const toggleSeries = (dataKey: string) => {
     setHiddenSeries((prev) => {
       const next = new Set(prev);
@@ -104,160 +134,330 @@ export default function DashboardPage() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6 flex gap-2 flex-wrap">
-          {[1, 2, 3, 4].map((v) => (
-            <Button
-              key={v}
-              variant={activeView === v ? "default" : "outline"}
-              onClick={() => setActiveView(v as 1 | 2 | 3 | 4)}
-            >
-              View {v}
-            </Button>
-          ))}
+          <Button
+            variant={activeView === 1 ? "default" : "outline"}
+            onClick={() => setActiveView(1)}
+          >
+            Bar & Donut
+          </Button>
+          <Button
+            variant={activeView === 2 ? "default" : "outline"}
+            onClick={() => setActiveView(2)}
+          >
+            Stacked
+          </Button>
+          <Button
+            variant={activeView === 3 ? "default" : "outline"}
+            onClick={() => setActiveView(3)}
+          >
+            Dual Axis
+          </Button>
         </div>
 
         {activeView === 1 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card rounded-lg border p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">Weekly Mood Trend</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={moodTrend}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="week" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Area
-                    type="monotone"
-                    dataKey="happy"
-                    stackId="1"
-                    stroke={COLORS.mood.happy}
-                    fill={COLORS.mood.happy}
-                    fillOpacity={0.6}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="tired"
-                    stackId="1"
-                    stroke={COLORS.mood.tired}
-                    fill={COLORS.mood.tired}
-                    fillOpacity={0.6}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="stressed"
-                    stackId="1"
-                    stroke={COLORS.mood.stressed}
-                    fill={COLORS.mood.stressed}
-                    fillOpacity={0.6}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Coffee Brands */}
+              <div className="bg-card rounded-lg border p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">
+                  Top Coffee Brands (Bar)
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={coffeeBrands || []}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                    <XAxis dataKey="brand" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend
+                      content={
+                        <CustomLegend
+                          onToggle={toggleSeries}
+                          hiddenSeries={hiddenSeries}
+                          onColorChange={handleColorChange}
+                        />
+                      }
+                    />
+                    <Bar
+                      dataKey="popularity"
+                      fill={customColors["popularity"] || COLORS.primary[0]}
+                      name="Popularity"
+                      hide={hiddenSeries.has("Popularity")}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="bg-card rounded-lg border p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">
+                  Top Coffee Brands (Donut)
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      data={(coffeeBrands || []) as any}
+                      dataKey="popularity"
+                      nameKey="brand"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      label
+                    >
+                      {coffeeBrands?.map((entry, i) => (
+                        <Cell
+                          key={`cell-${i}`}
+                          fill={
+                            customColors[entry.brand] ||
+                            COLORS.primary[i % COLORS.primary.length]
+                          }
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend
+                      content={
+                        <CustomLegend
+                          onToggle={toggleSeries}
+                          hiddenSeries={hiddenSeries}
+                          onColorChange={handleColorChange}
+                        />
+                      }
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-            <div className="bg-card rounded-lg border p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">
-                Popular Snack Brands
-              </h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    data={(snackBrands || []) as any}
-                    dataKey="share"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    label
-                  >
-                    {snackBrands?.map((_, i) => (
-                      <Cell
-                        key={`cell-${i}`}
-                        fill={COLORS.primary[i % COLORS.primary.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Snack Brands */}
+              <div className="bg-card rounded-lg border p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">
+                  Popular Snack Brands (Bar)
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={snackBrands || []}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend
+                      content={
+                        <CustomLegend
+                          onToggle={toggleSeries}
+                          hiddenSeries={hiddenSeries}
+                          onColorChange={handleColorChange}
+                        />
+                      }
+                    />
+                    <Bar
+                      dataKey="share"
+                      fill={customColors["share"] || COLORS.primary[1]}
+                      name="Share"
+                      hide={hiddenSeries.has("Share")}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="bg-card rounded-lg border p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">
+                  Popular Snack Brands (Donut)
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      data={(snackBrands || []) as any}
+                      dataKey="share"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      label
+                    >
+                      {snackBrands?.map((entry, i) => (
+                        <Cell
+                          key={`cell-${i}`}
+                          fill={
+                            customColors[entry.name] ||
+                            COLORS.primary[i % COLORS.primary.length]
+                          }
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend
+                      content={
+                        <CustomLegend
+                          onToggle={toggleSeries}
+                          hiddenSeries={hiddenSeries}
+                          onColorChange={handleColorChange}
+                        />
+                      }
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
         )}
 
         {activeView === 2 && (
-          <div className="space-y-6">
-            <div className="bg-card rounded-lg border p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">
-                Weekly Mood Trend (Stacked)
-              </h3>
-              <ResponsiveContainer width="100%" height={350}>
-                <AreaChart data={combinedData}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="week" />
-                  <YAxis
-                    label={{
-                      value: "Percentage (%)",
-                      angle: -90,
-                      position: "insideLeft",
-                    }}
-                  />
-                  <Tooltip />
-                  <Legend />
-                  <Area
-                    type="monotone"
-                    dataKey="happy"
-                    stackId="mood"
-                    stroke={COLORS.mood.happy}
-                    fill={COLORS.mood.happy}
-                    fillOpacity={0.7}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="tired"
-                    stackId="mood"
-                    stroke={COLORS.mood.tired}
-                    fill={COLORS.mood.tired}
-                    fillOpacity={0.7}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="stressed"
-                    stackId="mood"
-                    stroke={COLORS.mood.stressed}
-                    fill={COLORS.mood.stressed}
-                    fillOpacity={0.7}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Mood Trend */}
+              <div className="bg-card rounded-lg border p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">
+                  Weekly Mood Trend (Stacked Area)
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={moodTrend}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                    <XAxis dataKey="week" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend
+                      content={
+                        <CustomLegend
+                          onToggle={toggleSeries}
+                          hiddenSeries={hiddenSeries}
+                          onColorChange={handleColorChange}
+                        />
+                      }
+                    />
+                    {["happy", "tired", "stressed"].map((key) => (
+                      <Area
+                        key={key}
+                        type="monotone"
+                        dataKey={key}
+                        stackId="mood"
+                        stroke={
+                          customColors[key] ||
+                          COLORS.mood[key as keyof typeof COLORS.mood]
+                        }
+                        fill={
+                          customColors[key] ||
+                          COLORS.mood[key as keyof typeof COLORS.mood]
+                        }
+                        fillOpacity={0.6}
+                        hide={hiddenSeries.has(key)}
+                      />
+                    ))}
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="bg-card rounded-lg border p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">
+                  Weekly Mood Trend (Stacked Bar)
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={moodTrend}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                    <XAxis dataKey="week" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend
+                      content={
+                        <CustomLegend
+                          onToggle={toggleSeries}
+                          hiddenSeries={hiddenSeries}
+                          onColorChange={handleColorChange}
+                        />
+                      }
+                    />
+                    {["happy", "tired", "stressed"].map((key) => (
+                      <Bar
+                        key={key}
+                        dataKey={key}
+                        stackId="mood-bar"
+                        fill={
+                          customColors[key] ||
+                          COLORS.mood[key as keyof typeof COLORS.mood]
+                        }
+                        hide={hiddenSeries.has(key)}
+                      />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-            <div className="bg-card rounded-lg border p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">
-                Weekly Workout Trend (Stacked)
-              </h3>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={combinedData}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="week" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar
-                    dataKey="running"
-                    stackId="workout"
-                    fill={COLORS.workout.running}
-                  />
-                  <Bar
-                    dataKey="cycling"
-                    stackId="workout"
-                    fill={COLORS.workout.cycling}
-                  />
-                  <Bar
-                    dataKey="stretching"
-                    stackId="workout"
-                    fill={COLORS.workout.stretching}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Workout Trend */}
+              <div className="bg-card rounded-lg border p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">
+                  Weekly Workout Trend (Stacked Area)
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={combinedData}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                    <XAxis dataKey="week" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend
+                      content={
+                        <CustomLegend
+                          onToggle={toggleSeries}
+                          hiddenSeries={hiddenSeries}
+                          onColorChange={handleColorChange}
+                        />
+                      }
+                    />
+                    {["running", "cycling", "stretching"].map((key) => (
+                      <Area
+                        key={key}
+                        type="monotone"
+                        dataKey={key}
+                        stackId="workout"
+                        stroke={
+                          customColors[key] ||
+                          COLORS.workout[key as keyof typeof COLORS.workout]
+                        }
+                        fill={
+                          customColors[key] ||
+                          COLORS.workout[key as keyof typeof COLORS.workout]
+                        }
+                        fillOpacity={0.6}
+                        hide={hiddenSeries.has(key)}
+                      />
+                    ))}
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="bg-card rounded-lg border p-6 shadow-sm">
+                <h3 className="text-lg font-semibold mb-4">
+                  Weekly Workout Trend (Stacked Bar)
+                </h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={combinedData}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                    <XAxis dataKey="week" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend
+                      content={
+                        <CustomLegend
+                          onToggle={toggleSeries}
+                          hiddenSeries={hiddenSeries}
+                          onColorChange={handleColorChange}
+                        />
+                      }
+                    />
+                    {["running", "cycling", "stretching"].map((key) => (
+                      <Bar
+                        key={key}
+                        dataKey={key}
+                        stackId="workout-bar"
+                        fill={
+                          customColors[key] ||
+                          COLORS.workout[key as keyof typeof COLORS.workout]
+                        }
+                        hide={hiddenSeries.has(key)}
+                      />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
         )}
@@ -266,10 +466,10 @@ export default function DashboardPage() {
           <div className="space-y-6">
             <div className="bg-card rounded-lg border p-6 shadow-sm">
               <h3 className="text-lg font-semibold mb-4">
-                Coffee Consumption vs Productivity & Bugs
+                Coffee Consumption vs Bugs & Productivity
               </h3>
               <ResponsiveContainer width="100%" height={400}>
-                <LineChart>
+                <LineChart data={coffeeChartData}>
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis
                     dataKey="cups"
@@ -283,7 +483,7 @@ export default function DashboardPage() {
                   <YAxis
                     yAxisId="left"
                     label={{
-                      value: "Bugs/Productivity",
+                      value: "Bugs",
                       angle: -90,
                       position: "insideLeft",
                     }}
@@ -292,60 +492,12 @@ export default function DashboardPage() {
                     yAxisId="right"
                     orientation="right"
                     label={{
-                      value: "Bugs/Productivity",
+                      value: "Productivity",
                       angle: 90,
                       position: "insideRight",
                     }}
                   />
                   <Tooltip />
-                  {coffeeConsumption?.teams?.map((team, i) => (
-                    <Line
-                      key={team.team}
-                      yAxisId="left"
-                      type="monotone"
-                      data={team.series}
-                      dataKey="productivity"
-                      name={`${team.team} Productivity`}
-                      stroke={
-                        customColors[`${team.team} Productivity`] ||
-                        COLORS.primary[i]
-                      }
-                      strokeWidth={2}
-                      hide={hiddenSeries.has(`${team.team} Productivity`)}
-                      dot={{
-                        r: 4,
-                        fill:
-                          customColors[`${team.team} Productivity`] ||
-                          COLORS.primary[i],
-                      }}
-                      activeDot={{ r: 6 }}
-                    />
-                  ))}
-                  {coffeeConsumption?.teams?.map((team, i) => (
-                    <Line
-                      key={`${team.team}-bugs`}
-                      yAxisId="right"
-                      type="monotone"
-                      data={team.series}
-                      dataKey="bugs"
-                      name={`${team.team} Bugs`}
-                      stroke={
-                        customColors[`${team.team} Bugs`] || COLORS.primary[i]
-                      }
-                      strokeWidth={2}
-                      strokeDasharray="5 5"
-                      hide={hiddenSeries.has(`${team.team} Bugs`)}
-                      dot={
-                        <SquareDot
-                          fill={
-                            customColors[`${team.team} Bugs`] ||
-                            COLORS.primary[i]
-                          }
-                        />
-                      }
-                      activeDot={{ r: 6 }}
-                    />
-                  ))}
                   <Legend
                     content={
                       <CustomLegend
@@ -356,15 +508,61 @@ export default function DashboardPage() {
                       />
                     }
                   />
+                  {coffeeConsumption?.teams?.map((team, i) => (
+                    <Line
+                      key={`${team.team}-bugs`}
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey={`${team.team} Bugs`}
+                      name={`${team.team} Bugs`}
+                      stroke={
+                        customColors[`${team.team} Bugs`] || COLORS.primary[i]
+                      }
+                      strokeWidth={2}
+                      hide={hiddenSeries.has(`${team.team} Bugs`)}
+                      dot={{
+                        r: 4,
+                        fill:
+                          customColors[`${team.team} Bugs`] ||
+                          COLORS.primary[i],
+                      }}
+                      activeDot={{ r: 6 }}
+                    />
+                  ))}
+                  {coffeeConsumption?.teams?.map((team, i) => (
+                    <Line
+                      key={`${team.team}-productivity`}
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey={`${team.team} Productivity`}
+                      name={`${team.team} Productivity`}
+                      stroke={
+                        customColors[`${team.team} Productivity`] ||
+                        COLORS.primary[i]
+                      }
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      hide={hiddenSeries.has(`${team.team} Productivity`)}
+                      dot={
+                        <SquareDot
+                          fill={
+                            customColors[`${team.team} Productivity`] ||
+                            COLORS.primary[i]
+                          }
+                        />
+                      }
+                      activeDot={{ r: 6 }}
+                    />
+                  ))}
                 </LineChart>
               </ResponsiveContainer>
             </div>
             <div className="bg-card rounded-lg border p-6 shadow-sm">
               <h3 className="text-lg font-semibold mb-4">
-                Snack Impact on Morale & Meetings
+                Snack Impact on Meetings & Morale
               </h3>
               <ResponsiveContainer width="100%" height={400}>
-                <LineChart>
+                <LineChart data={snackChartData}>
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis
                     dataKey="snacks"
@@ -378,7 +576,7 @@ export default function DashboardPage() {
                   <YAxis
                     yAxisId="left"
                     label={{
-                      value: "Morale",
+                      value: "Meetings Missed",
                       angle: -90,
                       position: "insideLeft",
                     }}
@@ -387,29 +585,39 @@ export default function DashboardPage() {
                     yAxisId="right"
                     orientation="right"
                     label={{
-                      value: "Meetings Missed",
+                      value: "Morale",
                       angle: 90,
                       position: "insideRight",
                     }}
                   />
                   <Tooltip />
+                  <Legend
+                    content={
+                      <CustomLegend
+                        onToggle={toggleSeries}
+                        hiddenSeries={hiddenSeries}
+                        markerShape="auto"
+                        onColorChange={handleColorChange}
+                      />
+                    }
+                  />
                   {snackImpact?.departments?.map((dept, i) => (
                     <Line
-                      key={dept.name}
+                      key={`${dept.name}-missed`}
                       yAxisId="left"
                       type="monotone"
-                      data={dept.metrics}
-                      dataKey="morale"
-                      name={`${dept.name} Morale`}
+                      dataKey={`${dept.name} Meetings`}
+                      name={`${dept.name} Meetings`}
                       stroke={
-                        customColors[`${dept.name} Morale`] || COLORS.primary[i]
+                        customColors[`${dept.name} Meetings`] ||
+                        COLORS.primary[i]
                       }
                       strokeWidth={2}
-                      hide={hiddenSeries.has(`${dept.name} Morale`)}
+                      hide={hiddenSeries.has(`${dept.name} Meetings`)}
                       dot={{
                         r: 4,
                         fill:
-                          customColors[`${dept.name} Morale`] ||
+                          customColors[`${dept.name} Meetings`] ||
                           COLORS.primary[i],
                       }}
                       activeDot={{ r: 6 }}
@@ -417,23 +625,21 @@ export default function DashboardPage() {
                   ))}
                   {snackImpact?.departments?.map((dept, i) => (
                     <Line
-                      key={`${dept.name}-missed`}
+                      key={`${dept.name}-morale`}
                       yAxisId="right"
                       type="monotone"
-                      data={dept.metrics}
-                      dataKey="meetingsMissed"
-                      name={`${dept.name} Meetings`}
+                      dataKey={`${dept.name} Morale`}
+                      name={`${dept.name} Morale`}
                       stroke={
-                        customColors[`${dept.name} Meetings`] ||
-                        COLORS.primary[i]
+                        customColors[`${dept.name} Morale`] || COLORS.primary[i]
                       }
                       strokeWidth={2}
                       strokeDasharray="5 5"
-                      hide={hiddenSeries.has(`${dept.name} Meetings`)}
+                      hide={hiddenSeries.has(`${dept.name} Morale`)}
                       dot={
                         <SquareDot
                           fill={
-                            customColors[`${dept.name} Meetings`] ||
+                            customColors[`${dept.name} Morale`] ||
                             COLORS.primary[i]
                           }
                         />
@@ -441,80 +647,6 @@ export default function DashboardPage() {
                       activeDot={{ r: 6 }}
                     />
                   ))}
-                  <Legend
-                    content={
-                      <CustomLegend
-                        onToggle={toggleSeries}
-                        hiddenSeries={hiddenSeries}
-                        markerShape="auto"
-                      />
-                    }
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-
-        {activeView === 4 && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-card rounded-lg border p-6 shadow-sm">
-                <h3 className="text-lg font-semibold mb-4">
-                  Top Coffee Brands
-                </h3>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={coffeeBrands || []}>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                    <XAxis dataKey="brand" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="popularity" fill={COLORS.primary[0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="bg-card rounded-lg border p-6 shadow-sm">
-                <h3 className="text-lg font-semibold mb-4">Snack Brands</h3>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={snackBrands || []}>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="share" fill={COLORS.primary[1]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-            <div className="bg-card rounded-lg border p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-4">
-                Weekly Trends Overview
-              </h3>
-              <ResponsiveContainer width="100%" height={350}>
-                <LineChart data={moodTrend}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="week" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="happy"
-                    stroke={COLORS.mood.happy}
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="tired"
-                    stroke={COLORS.mood.tired}
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="stressed"
-                    stroke={COLORS.mood.stressed}
-                    strokeWidth={2}
-                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
