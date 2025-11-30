@@ -7,6 +7,7 @@ import { Label } from "../components/ui/Label";
 import { api, setAuthToken } from "../api/client";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
+import { AxiosError } from "axios";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -36,10 +37,11 @@ export default function LoginPage() {
         localStorage.setItem("token", token);
         navigate("/products");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
+      const error = err as AxiosError<{ message: string }>;
       setError(
-        err.response?.data?.message ||
+        error.response?.data?.message ||
           "Login failed. Please check your credentials."
       );
     }

@@ -40,7 +40,7 @@ export default function SignupPage() {
       // Since there is no actual signup API, we just redirect to login
       console.log("Signup data:", data);
       navigate("/");
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setError("Signup failed. Please try again.");
     }
