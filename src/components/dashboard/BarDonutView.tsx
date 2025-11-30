@@ -57,13 +57,14 @@ export const BarDonutView = ({
                   />
                 }
               />
-              <Bar
-                dataKey="popularity"
-                fill={customColors["popularity"] || COLORS.primary[0]}
-                name="Popularity"
-                hide={hiddenSeries.has("Popularity")}
-                isAnimationActive={false}
-              />
+              {!hiddenSeries.has("Popularity") && (
+                <Bar
+                  dataKey="popularity"
+                  fill={customColors["popularity"] || COLORS.primary[0]}
+                  name="Popularity"
+                  isAnimationActive={false}
+                />
+              )}
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -130,13 +131,14 @@ export const BarDonutView = ({
                   />
                 }
               />
-              <Bar
-                dataKey="share"
-                fill={customColors["share"] || COLORS.primary[1]}
-                name="Share"
-                hide={hiddenSeries.has("Share")}
-                isAnimationActive={false}
-              />
+              {!hiddenSeries.has("Share") && (
+                <Bar
+                  dataKey="share"
+                  fill={customColors["share"] || COLORS.primary[1]}
+                  name="Share"
+                  isAnimationActive={false}
+                />
+              )}
             </BarChart>
           </ResponsiveContainer>
         </div>
