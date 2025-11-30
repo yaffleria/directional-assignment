@@ -10,7 +10,7 @@
  * ---------------------------------------------------------------
  */
 
-import {
+import type {
   CoffeeConsumptionResponse,
   PopularSnackBrandsResponse,
   Post,
@@ -19,10 +19,11 @@ import {
   WeeklyMoodTrendResponse,
   WeeklyWorkoutTrendResponse,
 } from "./data-contracts";
-import { HttpClient, RequestParams } from "./http-client";
+import { HttpClient } from "./http-client";
+import type { RequestParams } from "./http-client";
 
 export class Mock<
-  SecurityDataType = unknown,
+  SecurityDataType = unknown
 > extends HttpClient<SecurityDataType> {
   /**
    * @description 서버 시작 시 생성된 고정 500개 데이터 중 앞에서부터 `count`개를 반환합니다. 항상 동일한 데이터셋에서 slice 되므로 요청마다 결과가 일관됩니다.
@@ -42,7 +43,7 @@ export class Mock<
        */
       count?: number;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<
       {

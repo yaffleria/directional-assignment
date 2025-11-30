@@ -10,20 +10,19 @@
  * ---------------------------------------------------------------
  */
 
-import {
-  Category,
+import { Category, SortField, SortOrder } from "./data-contracts";
+import type {
   DeleteResponse,
   Post,
   PostCreateRequest,
   PostListResponse,
   PostUpdateRequest,
-  SortField,
-  SortOrder,
 } from "./data-contracts";
-import { ContentType, HttpClient, RequestParams } from "./http-client";
+import { ContentType, HttpClient } from "./http-client";
+import type { RequestParams } from "./http-client";
 
 export class Posts<
-  SecurityDataType = unknown,
+  SecurityDataType = unknown
 > extends HttpClient<SecurityDataType> {
   /**
    * @description 양방향 커서 기반 페이지네이션(prevCursor/nextCursor)을 지원합니다. prev/next를 동시에 전달할 수 없습니다.
@@ -58,7 +57,7 @@ export class Posts<
       /** 제목/본문 검색어 (공백으로 여러 단어 입력 시 AND 매칭) */
       search?: string;
     },
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<PostListResponse, void>({
       path: `/posts`,
@@ -129,7 +128,7 @@ export class Posts<
   postsPartialUpdate = (
     id: string,
     data: PostUpdateRequest,
-    params: RequestParams = {},
+    params: RequestParams = {}
   ) =>
     this.request<Post, void>({
       path: `/posts/${id}`,

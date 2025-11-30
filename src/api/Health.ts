@@ -10,10 +10,11 @@
  * ---------------------------------------------------------------
  */
 
-import { HttpClient, RequestParams } from "./http-client";
+import { HttpClient } from "./http-client";
+import type { RequestParams } from "./http-client";
 
 export class Health<
-  SecurityDataType = unknown,
+  SecurityDataType = unknown
 > extends HttpClient<SecurityDataType> {
   /**
    * No description
