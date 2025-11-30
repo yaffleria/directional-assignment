@@ -76,7 +76,7 @@ export const DualAxisView = ({
             />
             <Tooltip
               content={<CustomDualAxisTooltip xAxisLabel="Cups" />}
-              shared={false}
+              shared={true}
             />
             <Legend
               content={
@@ -171,7 +171,7 @@ export const DualAxisView = ({
             />
             <Tooltip
               content={<CustomDualAxisTooltip xAxisLabel="Snacks" />}
-              shared={false}
+              shared={true}
             />
             <Legend
               content={
