@@ -52,7 +52,7 @@ export default function PostsListPage() {
     initialPageParam: undefined as string | undefined,
     // Extract nextCursor from last page for fetching the next page
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    staleTime: 1000 * 60,
+    staleTime: 0,
   });
 
   // Flatten all pages into a single posts array
@@ -77,14 +77,12 @@ export default function PostsListPage() {
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
+      // Refetch is not needed here as search state update will trigger it via queryKey
+      // But we keep it if the user hits enter without changing the text, though typically redundant
       refetch();
     },
     [refetch]
   );
-
-  const resetPagination = () => {
-    refetch();
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -132,7 +130,6 @@ export default function PostsListPage() {
               value={category}
               onChange={(e) => {
                 setCategory(e.target.value as Category | "");
-                resetPagination();
               }}
               className="h-9 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
@@ -146,7 +143,6 @@ export default function PostsListPage() {
               value={sort}
               onChange={(e) => {
                 setSort(e.target.value as SortField);
-                resetPagination();
               }}
               className="h-9 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
@@ -158,7 +154,6 @@ export default function PostsListPage() {
               value={order}
               onChange={(e) => {
                 setOrder(e.target.value as SortOrder);
-                resetPagination();
               }}
               className="h-9 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
