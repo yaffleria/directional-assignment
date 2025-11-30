@@ -4,9 +4,8 @@ import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import type { Category, SortField, SortOrder } from "../api/data-contracts";
-import { Button } from "../components/Button/Button";
-import { Input } from "../components/Input/Input";
-import { Select } from "../components/Select/Select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "../components/LoadingSpinner/LoadingSpinner";
 import { useDeletePost } from "../hooks/useDeletePost";
 import { Search, Plus, LogOut } from "lucide-react";
@@ -118,40 +117,43 @@ export default function PostsListPage() {
           </form>
 
           <div className="flex gap-4 flex-wrap">
-            <Select
+            <select
               value={category}
               onChange={(e) => {
                 setCategory(e.target.value as Category | "");
                 resetPagination();
               }}
+              className="h-9 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="">All Categories</option>
               <option value="NOTICE">Notice</option>
               <option value="QNA">Q&A</option>
               <option value="FREE">Free</option>
-            </Select>
+            </select>
 
-            <Select
+            <select
               value={sort}
               onChange={(e) => {
                 setSort(e.target.value as SortField);
                 resetPagination();
               }}
+              className="h-9 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="createdAt">Sort by Date</option>
               <option value="title">Sort by Title</option>
-            </Select>
+            </select>
 
-            <Select
+            <select
               value={order}
               onChange={(e) => {
                 setOrder(e.target.value as SortOrder);
                 resetPagination();
               }}
+              className="h-9 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="desc">Descending</option>
               <option value="asc">Ascending</option>
-            </Select>
+            </select>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/client";
-import { Button } from "../components/Button/Button";
+import { Button } from "@/components/ui/button";
 import { LoadingPage } from "../components/LoadingSpinner/LoadingSpinner";
 import { CategoryBadge } from "../components/CategoryBadge/CategoryBadge";
 import { useDeletePost } from "../hooks/useDeletePost";

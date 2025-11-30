@@ -19,7 +19,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Button } from "../components/Button/Button";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "../components/layout/PageHeader/PageHeader";
 import { ArrowLeft } from "lucide-react";
 
