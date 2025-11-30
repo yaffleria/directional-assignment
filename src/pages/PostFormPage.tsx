@@ -1,13 +1,20 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postSchema, type PostFormData } from "../schema/posts.schema";
 import { api } from "../api/client";
-import { Button } from "../components/Button/Button";
-import { Input } from "../components/Input/Input";
-import { Label } from "../components/Label/Label";
-import { Textarea } from "../components/Textarea/Textarea";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PageHeader } from "../components/layout/PageHeader/PageHeader";
 import { ArrowLeft } from "lucide-react";
 import type { Category } from "../api/data-contracts";
@@ -31,6 +38,7 @@ export default function PostFormPage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
@@ -145,17 +153,27 @@ export default function PostFormPage() {
             <Label htmlFor="category">
               Category <span className="text-destructive">*</span>
             </Label>
-            <select
-              id="category"
-              {...register("category")}
-              className={`w-full rounded-md border ${
-                errors.category ? "border-destructive" : "border-input"
-              } bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring`}
-            >
-              <option value="NOTICE">Notice</option>
-              <option value="QNA">Q&A</option>
-              <option value="FREE">Free</option>
-            </select>
+            <Controller
+              control={control}
+              name="category"
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger
+                    className={errors.category ? "border-destructive" : ""}
+                  >
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NOTICE">Notice</SelectItem>
+                    <SelectItem value="QNA">Q&A</SelectItem>
+                    <SelectItem value="FREE">Free</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.category && (
               <p className="text-xs text-destructive">
                 {errors.category.message}
