@@ -20,7 +20,30 @@ export const postSchema = z.object({
       }
     ),
   category: z.enum(["NOTICE", "QNA", "FREE"]),
-  tags: z.string(),
+  tags: z
+    .string()
+    .refine(
+      (val) => {
+        const tags = new Set(
+          val
+            .split(",")
+            .map((t) => t.trim())
+            .filter((t) => t.length > 0)
+        );
+        return tags.size <= 5;
+      },
+      { message: "Max 5 unique tags allowed" }
+    )
+    .refine(
+      (val) => {
+        const tags = val
+          .split(",")
+          .map((t) => t.trim())
+          .filter((t) => t.length > 0);
+        return tags.every((t) => t.length <= 24);
+      },
+      { message: "Each tag must be 24 characters or less" }
+    ),
 });
 
 export type PostFormData = z.infer<typeof postSchema>;

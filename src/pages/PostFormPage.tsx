@@ -59,11 +59,14 @@ export default function PostFormPage() {
 
   const createMutation = useMutation({
     mutationFn: (data: PostFormData) => {
-      const tags = data.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t.length > 0)
-        .slice(0, 5);
+      const tags = Array.from(
+        new Set(
+          data.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter((t) => t.length > 0)
+        )
+      ).slice(0, 5);
 
       return api.posts.postsCreate({
         title: data.title,
@@ -81,11 +84,14 @@ export default function PostFormPage() {
   const updateMutation = useMutation({
     mutationFn: (data: PostFormData) => {
       if (!id) throw new Error("No post ID");
-      const tags = data.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t.length > 0)
-        .slice(0, 5);
+      const tags = Array.from(
+        new Set(
+          data.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter((t) => t.length > 0)
+        )
+      ).slice(0, 5);
 
       return api.posts.postsPartialUpdate(id, {
         title: data.title,
