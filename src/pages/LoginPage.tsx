@@ -1,21 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
-import { Label } from "../components/ui/Label";
+import { loginSchema, type LoginFormData } from "../schema/login.schema";
+import { Button } from "../components/ui/Button/Button";
+import { Input } from "../components/ui/Input/Input";
+import { Label } from "../components/ui/Label/Label";
 import { api, setAuthToken } from "../api/client";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { AxiosError } from "axios";
-import { AuthLayout } from "../components/auth/AuthLayout";
-
-const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+import { AuthLayout } from "../components/layout/AuthLayout/AuthLayout";
 
 export default function LoginPage() {
   const navigate = useNavigate();

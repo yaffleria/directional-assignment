@@ -19,8 +19,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Button } from "../components/ui/Button";
-import { PageHeader } from "../components/layout/PageHeader";
+import { Button } from "../components/ui/Button/Button";
+import { PageHeader } from "../components/layout/PageHeader/PageHeader";
 import { ArrowLeft } from "lucide-react";
 
 const COLORS = {

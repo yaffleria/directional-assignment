@@ -1,16 +1,19 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/client";
-import { Button } from "../components/ui/Button";
-import { LoadingPage } from "../components/ui/LoadingSpinner";
-import { CategoryBadge } from "../components/ui/CategoryBadge";
+import { Button } from "../components/ui/Button/Button";
+import {
+  LoadingSpinner,
+  LoadingPage,
+} from "../components/ui/LoadingSpinner/LoadingSpinner";
+import { CategoryBadge } from "../components/ui/CategoryBadge/CategoryBadge";
 import { useDeletePost } from "../hooks/useDeletePost";
 import { formatDateTime } from "../lib/date";
 import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import { useModal } from "../hooks/useModal";
-import { PageHeader } from "../components/layout/PageHeader";
-import { DeletePostModal } from "../components/posts/DeletePostModal";
-import { Tag } from "../components/ui/Tag";
+import { PageHeader } from "../components/layout/PageHeader/PageHeader";
+import { DeletePostModal } from "../components/posts/DeletePostModal/DeletePostModal";
+import { Tag } from "../components/ui/Tag/Tag";
 
 export default function PostDetailPage() {
   const { id } = useParams<{ id: string }>();

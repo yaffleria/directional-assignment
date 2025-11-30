@@ -1,25 +1,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
-import { Label } from "../components/ui/Label";
+import { signupSchema, type SignupFormData } from "../schema/signup.schema";
+import { Button } from "../components/ui/Button/Button";
+import { Input } from "../components/ui/Input/Input";
+import { Label } from "../components/ui/Label/Label";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import { AuthLayout } from "../components/auth/AuthLayout";
-
-const signupSchema = z
-  .object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-type SignupFormData = z.infer<typeof signupSchema>;
+import { AuthLayout } from "../components/layout/AuthLayout/AuthLayout";
 
 export default function SignupPage() {
   const navigate = useNavigate();

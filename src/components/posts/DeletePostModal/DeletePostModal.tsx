@@ -1,5 +1,5 @@
-import { Modal } from "../ui/Modal";
-import { Button } from "../ui/Button";
+import { Modal } from "../../ui/Modal/Modal";
+import { Button } from "../../ui/Button/Button";
 
 interface DeletePostModalProps {
   isOpen: boolean;

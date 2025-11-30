@@ -2,30 +2,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { postSchema, type PostFormData } from "../schema/posts.schema";
 import { api } from "../api/client";
-import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
-import { Label } from "../components/ui/Label";
-import { Textarea } from "../components/ui/Textarea";
-import { PageHeader } from "../components/layout/PageHeader";
+import { Button } from "../components/ui/Button/Button";
+import { Input } from "../components/ui/Input/Input";
+import { Label } from "../components/ui/Label/Label";
+import { Textarea } from "../components/ui/Textarea/Textarea";
+import { PageHeader } from "../components/layout/PageHeader/PageHeader";
 import { ArrowLeft } from "lucide-react";
 import type { Category } from "../api/data-contracts";
-
-const postSchema = z.object({
-  title: z
-    .string()
-    .min(1, "Title is required")
-    .max(80, "Title must be 80 characters or less"),
-  body: z
-    .string()
-    .min(1, "Content is required")
-    .max(2000, "Content must be 2000 characters or less"),
-  category: z.enum(["NOTICE", "QNA", "FREE"]),
-  tags: z.string(),
-});
-
-type PostFormData = z.infer<typeof postSchema>;
 
 export default function PostFormPage() {
   const { id } = useParams<{ id: string }>();

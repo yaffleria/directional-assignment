@@ -4,16 +4,16 @@ import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import type { Category, SortField, SortOrder } from "../api/data-contracts";
-import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
-import { Select } from "../components/ui/Select";
-import { LoadingSpinner } from "../components/ui/LoadingSpinner";
+import { Button } from "../components/ui/Button/Button";
+import { Input } from "../components/ui/Input/Input";
+import { Select } from "../components/ui/Select/Select";
+import { LoadingSpinner } from "../components/ui/LoadingSpinner/LoadingSpinner";
 import { useDeletePost } from "../hooks/useDeletePost";
 import { Search, Plus, LogOut } from "lucide-react";
 import { useModal } from "../hooks/useModal";
-import { PageHeader } from "../components/layout/PageHeader";
-import { PostCard } from "../components/posts/PostCard";
-import { DeletePostModal } from "../components/posts/DeletePostModal";
+import { PageHeader } from "../components/layout/PageHeader/PageHeader";
+import { PostCard } from "../components/posts/PostCard/PostCard";
+import { DeletePostModal } from "../components/posts/DeletePostModal/DeletePostModal";
 
 export default function PostsListPage() {
   const navigate = useNavigate();
