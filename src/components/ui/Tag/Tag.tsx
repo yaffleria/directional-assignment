@@ -1,10 +1,7 @@
 import React from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "../../../lib/utils";
 
-interface TagProps extends React.HTMLAttributes<HTMLSpanElement> {
-  children: React.ReactNode;
-  variant?: "default" | "outline" | "secondary";
-}
+import type { TagProps } from "./Tag.types";
 
 export function Tag({
   children,

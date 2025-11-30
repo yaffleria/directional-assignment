@@ -1,10 +1,6 @@
 import React from "react";
 
-interface AuthLayoutProps {
-  children: React.ReactNode;
-  title: string;
-  description?: React.ReactNode;
-}
+import type { AuthLayoutProps } from "./AuthLayout.types";
 
 export function AuthLayout({ children, title, description }: AuthLayoutProps) {
   return (

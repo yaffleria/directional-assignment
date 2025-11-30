@@ -1,16 +1,9 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { Button } from "./Button";
+import { Button } from "../Button/Button";
 
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  description?: string;
-  children?: React.ReactNode;
-  footer?: React.ReactNode;
-}
+import type { ModalProps } from "./Modal.types";
 
 export function Modal({
   isOpen,

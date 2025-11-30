@@ -1,6 +1,6 @@
-import type { Category } from "../../api/data-contracts";
+import type { CategoryBadgeProps } from "./CategoryBadge.types";
 
-export function CategoryBadge({ category }: { category: Category }) {
+export function CategoryBadge({ category }: CategoryBadgeProps) {
   const colorClasses = {
     NOTICE: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
     QNA: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",

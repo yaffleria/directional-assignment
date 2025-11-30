@@ -1,12 +1,7 @@
 import { Modal } from "../../ui/Modal/Modal";
 import { Button } from "../../ui/Button/Button";
 
-interface DeletePostModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  isDeleting: boolean;
-}
+import type { DeletePostModalProps } from "./DeletePostModal.types";
 
 export function DeletePostModal({
   isOpen,

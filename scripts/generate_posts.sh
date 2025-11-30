@@ -12,13 +12,20 @@ else
     exit 1
 fi
 
-# Prompt for credentials
-echo "Please enter your login credentials."
-read -p "Email: " EMAIL
-read -s -p "Password: " PASSWORD
-echo ""
+# Check for arguments or prompt
+EMAIL=${1:-}
+PASSWORD=${2:-}
 
-echo "Logging in..."
+if [ -z "$EMAIL" ]; then
+    read -p "Email: " EMAIL
+fi
+
+if [ -z "$PASSWORD" ]; then
+    read -s -p "Password: " PASSWORD
+    echo ""
+fi
+
+echo "Logging in as $EMAIL..."
 LOGIN_RESPONSE=$(curl -s -X POST "$API_URL/auth/login" \
   -H "Content-Type: application/json" \
   -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}")

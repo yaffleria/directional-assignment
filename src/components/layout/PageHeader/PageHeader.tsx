@@ -1,9 +1,7 @@
 import React from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "../../../lib/utils";
 
-interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
-  children: React.ReactNode;
-}
+import type { PageHeaderProps } from "./PageHeader.types";
 
 export function PageHeader({ children, className, ...props }: PageHeaderProps) {
   return (

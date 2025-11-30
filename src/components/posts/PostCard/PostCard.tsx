@@ -1,15 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import type { Post } from "../../../api/data-contracts";
 import { Button } from "../../ui/Button/Button";
 import { CategoryBadge } from "../../ui/CategoryBadge/CategoryBadge";
 import { Tag } from "../../ui/Tag/Tag";
 import { formatDate } from "../../../lib/date";
 
-interface PostCardProps {
-  post: Post;
-  onDeleteClick: (id: string) => void;
-  isDeleting?: boolean;
-}
+import type { PostCardProps } from "./PostCard.types";
 
 export function PostCard({ post, onDeleteClick, isDeleting }: PostCardProps) {
   const navigate = useNavigate();
