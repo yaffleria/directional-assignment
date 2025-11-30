@@ -1,7 +1,11 @@
-import { Badge } from '@repo/components'
+import React from 'react'
+import { Badge } from './badge'
 import { cn } from '@repo/utils'
 
-import type { TagProps } from './Tag.types'
+export interface TagProps extends React.HTMLAttributes<HTMLSpanElement> {
+  children: React.ReactNode
+  variant?: 'default' | 'outline' | 'secondary'
+}
 
 export function Tag({ children, className, variant = 'default', ...props }: TagProps) {
   const variants = {

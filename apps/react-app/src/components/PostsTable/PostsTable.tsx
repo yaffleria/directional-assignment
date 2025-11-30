@@ -1,10 +1,15 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Post } from '../../api/data-contracts'
-import { CategoryBadge } from '../CategoryBadge/CategoryBadge'
+import {
+  Button,
+  CategoryBadge,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger
+} from '@repo/components'
 import { formatDate } from '../../lib/date'
-import { Button } from '@repo/components'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuTrigger } from '@repo/components'
 import { Edit, Trash2, Settings } from 'lucide-react'
 
 interface PostsTableProps {

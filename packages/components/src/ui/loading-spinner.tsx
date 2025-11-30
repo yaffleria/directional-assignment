@@ -1,4 +1,6 @@
-import type { LoadingSpinnerProps } from './LoadingSpinner.types'
+export interface LoadingSpinnerProps {
+  size?: 'sm' | 'md' | 'lg'
+}
 
 export function LoadingSpinner({ size = 'md' }: LoadingSpinnerProps) {
   const sizeClasses = {
