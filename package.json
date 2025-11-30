@@ -11,8 +11,8 @@
     "generate:api": "swagger-typescript-api generate -p src/api/swagger.json -o src/api -n api.ts --modular --axios",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:generate-data": "playwright test -g 'create 100 sample posts'",
-    "test:single-post": "playwright test -g 'should create a new post successfully'"
+    "test:generate-data": "playwright test --grep \"create 100\"",
+    "test:single-post": "playwright test --grep \"should create a new post\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

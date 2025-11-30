@@ -107,6 +107,9 @@ test.describe("Generate Sample Data", () => {
   });
 
   test("create 100 sample posts", async ({ page }) => {
+    // Set longer timeout for this test (10 minutes)
+    test.setTimeout(600000);
+
     // Login once
     await page.goto("/");
     await page.fill('input[type="email"]', TEST_EMAIL);
@@ -120,24 +123,33 @@ test.describe("Generate Sample Data", () => {
 
       console.log(`Creating post ${i + 1}/100: ${postData.title}`);
 
-      // Navigate to new post page
-      await page.click('button:has-text("New Post")');
-      await page.waitForURL("/posts/new");
+      try {
+        // Navigate to new post page
+        await page.click('button:has-text("New Post")');
+        await page.waitForURL("/posts/new", { timeout: 10000 });
 
-      // Fill form
-      await page.fill("input#title", postData.title);
-      await page.selectOption("select#category", postData.category);
-      await page.fill("input#tags", postData.tags);
-      await page.fill("textarea#body", postData.body);
+        // Fill form with increased timeouts
+        await page.fill("input#title", postData.title, { timeout: 5000 });
+        await page.selectOption("select#category", postData.category, {
+          timeout: 5000,
+        });
+        await page.fill("input#tags", postData.tags, { timeout: 5000 });
+        await page.fill("textarea#body", postData.body, { timeout: 5000 });
 
-      // Submit
-      await page.click('button[type="submit"]:has-text("Create Post")');
+        // Submit
+        await page.click('button[type="submit"]:has-text("Create Post")');
 
-      // Wait for navigation
-      await page.waitForURL("/posts", { timeout: 10000 });
+        // Wait for navigation
+        await page.waitForURL("/posts", { timeout: 10000 });
 
-      // Small delay to avoid overwhelming the server
-      await page.waitForTimeout(100);
+        // Small delay to avoid overwhelming the server
+        await page.waitForTimeout(200);
+      } catch (error) {
+        console.error(`Failed to create post ${i + 1}:`, error);
+        // Take screenshot on error
+        await page.screenshot({ path: `test-results/error-post-${i + 1}.png` });
+        throw error;
+      }
     }
 
     console.log("✅ Successfully created 100 sample posts!");
