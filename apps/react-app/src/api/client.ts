@@ -2,8 +2,11 @@ import axios from 'axios'
 import { API } from '@repo/api'
 
 // Create axios instance with base configuration
+const baseURL = import.meta.env.DEV ? '/api' : 'https://fe-hiring-rest-api.vercel.app'
+
+// Create axios instance with base configuration
 const axiosInstance = axios.create({
-  baseURL: '/api'
+  baseURL
 })
 
 // Function to set auth token
@@ -21,4 +24,4 @@ if (storedToken) {
   setAuthToken(storedToken)
 }
 
-export const api = new API(axiosInstance, '/api')
+export const api = new API(axiosInstance, baseURL)
