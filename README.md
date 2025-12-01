@@ -7,8 +7,8 @@
 
 ## 🎯 프로젝트 개요
 
-이 프로젝트는 **모던 웹 개발의 Best Practice**를 적용한 게시판 및 대시보드 시스템입니다.
-pnpm Workspace를 활용한 모노레포 구조로 설계되어, **재사용성**과 **확장성**을 극대화했습니다.
+이 프로젝트는 **모던 웹 개발의 Best Practice**를 지향하여 설계한 게시판 및 대시보드 시스템입니다.
+pnpm Workspace를 활용한 모노레포 구조로 설계되어, **재사용성**과 **확장성**을 최우선으로 고려했습니다.
 Antigravity IDE + Gemini3-pro + Claude Sonet 4.5를 활용하였습니다.
 
 ### 주요 특징
@@ -122,7 +122,7 @@ pnpm --filter react-app test:e2e
 
 - **ESLint 9** (Flat Config) - 모노레포 전체 린팅
 - **Playwright** - E2E 테스트 자동화
-- **Swagger TypeScript API** - API 타입 자동 생성
+- **AI-Assisted API Gen** - Python & AI를 활용한 API 클라이언트 생성 (Endpoint 접근 제한 대응)
 - **Prettier** - 코드 포매팅
 
 <br />
@@ -187,7 +187,7 @@ directional-assignment/
 │   └── next-app/           # Next.js 16 App Router (SSR)
 │
 └── packages/               # 공유 라이브러리
-    ├── @repo/api          # Swagger 생성 API 클라이언트
+    ├── @repo/api          # AI 기반 생성 API 클라이언트
     ├── @repo/components   # shadcn/ui 기반 컴포넌트
     ├── @repo/hooks        # 커스텀 React Hooks
     ├── @repo/schema       # Zod 검증 스키마
@@ -264,7 +264,7 @@ directional-assignment/
 │   ├── api/                        # @repo/api
 │   │   └── src/
 │   │       ├── index.ts           # API 클래스 export
-│   │       ├── Api.ts             # Swagger 자동 생성
+│   │       ├── Api.ts             # AI 기반 자동 생성
 │   │       └── data-contracts.ts  # TypeScript 타입
 │   │
 │   ├── components/                # @repo/components
@@ -313,9 +313,9 @@ directional-assignment/
 ### Design System
 
 - **shadcn/ui 선택 이유**
-  - ✅ 컴포넌트 소스 코드를 프로젝트에 직접 포함 (진정한 커스터마이징)
+  - ✅ 컴포넌트 소스 코드를 프로젝트에 직접 포함 (소스 코드 레벨의 제어권 확보)
   - ✅ Radix UI 기반으로 접근성(a11y) 자동 보장
-  - ✅ Tailwind CSS와 완벽한 통합
+  - ✅ Tailwind CSS와 긴밀한 통합
 
 ### 사용자 경험
 
