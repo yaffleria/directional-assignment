@@ -186,60 +186,79 @@ pnpm lint
 ## 📁 프로젝트 구조
 
 ```
-directional-assignment/
-├── src/
-│   ├── api/                      # API 클라이언트 및 타입 정의
-│   │   ├── client.ts            # Axios 인스턴스 설정
-│   │   ├── data-contracts.ts    # Swagger 생성 타입
-│   │   └── *.ts                 # API 엔드포인트 클래스
+directional-assignment/                # Monorepo root
+├── apps/
+│   ├── react-app/                    # React + Vite 애플리케이션
+│   │   ├── src/
+│   │   │   ├── api/
+│   │   │   │   └── client.ts        # Axios 인스턴스 설정
+│   │   │   ├── components/
+│   │   │   │   └── layout/          # 앱별 레이아웃 컴포넌트
+│   │   │   ├── pages/               # React Router 페이지
+│   │   │   │   ├── DashboardPage.tsx
+│   │   │   │   ├── LoginPage.tsx
+│   │   │   │   ├── PostsListPage.tsx
+│   │   │   │   ├── PostDetailPage.tsx
+│   │   │   │   └── PostFormPage.tsx
+│   │   │   ├── App.tsx
+│   │   │   ├── main.tsx
+│   │   │   └── index.css
+│   │   ├── e2e/                     # Playwright E2E 테스트
+│   │   ├── tailwind.config.js
+│   │   ├── vite.config.ts
+│   │   └── package.json
 │   │
-│   ├── components/              # 재사용 가능한 컴포넌트
-│   │   ├── ui/                  # shadcn/ui 컴포넌트
-│   │   │   ├── button.tsx
-│   │   │   ├── input.tsx
-│   │   │   ├── dialog.tsx
-│   │   │   └── ...
-│   │   ├── CategoryBadge/       # 카테고리 배지
-│   │   ├── CustomLegend/        # 차트 커스텀 범례
-│   │   ├── DeletePostModal/     # 삭제 확인 모달
-│   │   ├── LoadingSpinner/      # 로딩 스피너
-│   │   ├── PostsTable/          # 게시글 테이블
-│   │   ├── Tag/                 # 태그 컴포넌트
-│   │   └── layout/              # 레이아웃 컴포넌트
-│   │       ├── AuthLayout/
-│   │       ├── PageHeader/
-│   │       └── ProtectedRoute/
-│   │
-│   ├── hooks/                   # 커스텀 훅
-│   │   ├── useDeletePost.ts
-│   │   └── useModal.ts
-│   │
-│   ├── lib/                     # 유틸리티 함수
-│   │   ├── utils.ts             # cn (clsx + tailwind-merge)
-│   │   └── date.ts              # 날짜 포맷팅
-│   │
-│   ├── pages/                   # 페이지 컴포넌트
-│   │   ├── DashboardPage.tsx    # 대시보드 (차트)
-│   │   ├── LoginPage.tsx        # 로그인
+│   └── next-app/                    # Next.js 16 App Router 애플리케이션
+│       ├── src/
+│       │   ├── api/
+│       │   │   └── client.ts       # Next.js용 API 클라이언트
+│       │   ├── app/                # App Router 페이지
+│       │   └── components/
+│       ├── tailwind.config.ts
+│       ├── next.config.ts
+│       └── package.json
 │
-│   │   ├── PostsListPage.tsx    # 게시글 목록
-│   │   ├── PostDetailPage.tsx   # 게시글 상세
-│   │   └── PostFormPage.tsx     # 게시글 작성/수정
+├── packages/                        # 공유 라이브러리
+│   ├── api/                        # @repo/api
+│   │   └── src/
+│   │       ├── index.ts           # API 클라이언트 export
+│   │       ├── Api.ts             # Swagger 생성 API 클래스
+│   │       └── data-contracts.ts  # TypeScript 타입 정의
 │   │
-│   ├── schema/                  # Zod 스키마
-│   │   ├── login.schema.ts
-│
-│   │   └── posts.schema.ts
+│   ├── components/                # @repo/components
+│   │   └── src/
+│   │       ├── ui/                # shadcn/ui 컴포넌트
+│   │       │   ├── button.tsx
+│   │       │   ├── input.tsx
+│   │       │   ├── dialog.tsx
+│   │       │   └── ...
+│   │       ├── CategoryBadge/
+│   │       ├── CustomLegend/
+│   │       ├── DeletePostModal/
+│   │       ├── LoadingSpinner/
+│   │       ├── PostsTable/
+│   │       ├── Tag/
+│   │       └── layout/            # 공유 레이아웃
 │   │
-│   ├── App.tsx                  # 앱 라우팅
-│   ├── main.tsx                 # 진입점
-│   └── index.css                # 글로벌 스타일
+│   ├── hooks/                     # @repo/hooks
+│   │   └── src/
+│   │       ├── useDeletePost.ts
+│   │       └── useModal.ts
+│   │
+│   ├── schema/                    # @repo/schema
+│   │   └── src/
+│   │       ├── login.schema.ts
+│   │       └── posts.schema.ts
+│   │
+│   └── utils/                     # @repo/utils
+│       └── src/
+│           ├── cn.ts              # clsx + tailwind-merge
+│           └── date.ts            # 날짜 포맷팅
 │
-├── components.json              # shadcn/ui 설정
-├── tailwind.config.js           # Tailwind 설정
-├── tsconfig.json                # TypeScript 설정
-├── vite.config.ts               # Vite 설정
-└── package.json                 # 프로젝트 메타데이터
+├── eslint.config.js                # 공유 ESLint 설정
+├── tsconfig.json                   # 공유 TypeScript 기본 설정
+├── pnpm-workspace.yaml             # pnpm workspace 정의
+└── package.json                    # Monorepo 루트 설정
 ```
 
 ---
