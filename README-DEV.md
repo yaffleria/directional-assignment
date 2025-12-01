@@ -1744,6 +1744,397 @@ A: **무한 스크롤과 React Query의 통합**이었습니다:
 
 ---
 
+## 9. E2E 테스트 전략 (Playwright)
+
+### 9.1 테스트 환경 설정
+
+**위치:** `apps/react-app/e2e/`
+
+**Playwright 선택 이유:**
+
+```
+✅ 크로스 브라우저 테스트 (Chromium, Firefox, WebKit)
+✅ 자동 대기 (Auto-wait) - 요소가 준비될 때까지 자동 대기
+✅ 병렬 실행 - 빠른 테스트 속도
+✅ 비디오/스크린샷 캡처 - 실패 시 디버깅 용이
+✅ TypeScript 네이티브 지원
+```
+
+### 9.2 테스트 커버리지
+
+**1. 로그인 플로우**
+
+```typescript
+// e2e/auth.setup.ts
+test('authenticate', async ({ page }) => {
+  await page.goto('/')
+  await page.fill('input[type="email"]', 'jungmin.ji@icloud.com')
+  await page.fill('input[type="password"]', 'Q5kL7wPnQ6')
+  await page.click('button[type="submit"]')
+
+  // 로그인 성공 후 토큰 저장
+  await page.waitForURL('/posts')
+  await page.context().storageState({ path: 'e2e/.auth/user.json' })
+})
+```
+
+**2. 게시글 CRUD**
+
+```typescript
+// e2e/create-post.spec.ts
+test('should create a new post', async ({ page }) => {
+  await page.click('text=New Post')
+  await page.fill('[name="title"]', 'Test Post')
+  await page.fill('[name="body"]', 'Test Content')
+  await page.selectOption('[name="category"]', 'FREE')
+  await page.click('button:has-text("Submit")')
+
+  await expect(page.locator('text=Test Post')).toBeVisible()
+})
+```
+
+**3. 무한 스크롤**
+
+```typescript
+test('should load more posts on scroll', async ({ page }) => {
+  const initialPosts = await page.locator('[data-testid="post-row"]').count()
+
+  // 페이지 끝까지 스크롤
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+
+  // 더 많은 게시글이 로드되었는지 확인
+  await page.waitForTimeout(1000)
+  const loadedPosts = await page.locator('[data-testid="post-row"]').count()
+
+  expect(loadedPosts).toBeGreaterThan(initialPosts)
+})
+```
+
+**4. 필터링 & 검색**
+
+```typescript
+test('should filter posts by category', async ({ page }) => {
+  await page.selectOption('select[name="category"]', 'NOTICE')
+
+  // 모든 게시글이 NOTICE 카테고리인지 확인
+  const badges = await page.locator('[data-category-badge]').allTextContents()
+  expect(badges.every((badge) => badge === 'NOTICE')).toBeTruthy()
+})
+```
+
+**5. 차트 인터랙션**
+
+```typescript
+test('should toggle chart legend', async ({ page }) => {
+  await page.goto('/dashboard')
+
+  // 범례 클릭으로 시리즈 토글
+  await page.click('text=Frontend Productivity')
+
+  // 해당 라인이 숨겨졌는지 확인 (opacity 변경)
+  const legendItem = page.locator('text=Frontend Productivity').locator('..')
+  await expect(legendItem).toHaveCSS('opacity', '0.5')
+})
+```
+
+### 9.3 테스트 실행 명령어
+
+```bash
+# 전체 테스트 실행
+pnpm --filter react-app test:e2e
+
+# UI 모드 (디버깅)
+pnpm --filter react-app test:e2e:ui
+
+# 특정 테스트만 실행
+pnpm --filter react-app test:e2e --grep "create post"
+
+# 헤드리스 모드 (CI/CD)
+pnpm --filter react-app test:e2e --headless
+```
+
+### 9.4 테스트 베스트 프랙티스
+
+**1. Page Object Pattern 사용 고려**
+
+```typescript
+// e2e/pages/PostsPage.ts
+export class PostsPage {
+  constructor(private page: Page) {}
+
+  async createPost(title: string, body: string) {
+    await this.page.click('text=New Post')
+    await this.page.fill('[name="title"]', title)
+    await this.page.fill('[name="body"]', body)
+    await this.page.click('button:has-text("Submit")')
+  }
+
+  async searchPosts(query: string) {
+    await this.page.fill('[placeholder*="Search"]', query)
+    await this.page.press('[placeholder*="Search"]', 'Enter')
+  }
+}
+```
+
+**2. 테스트 격리 (Isolation)**
+
+```typescript
+// 각 테스트는 독립적으로 실행
+test.beforeEach(async ({ page }) => {
+  await page.goto('/posts')
+  await page.waitForLoadState('networkidle')
+})
+```
+
+**3. 명확한 Assertion**
+
+```typescript
+// ❌ 나쁜 예
+await page.waitForTimeout(3000)
+
+// ✅ 좋은 예
+await expect(page.locator('text=Success')).toBeVisible({ timeout: 5000 })
+```
+
+---
+
+## 10. UI/UX 설계 철학
+
+### 10.1 shadcn/ui + Radix UI 조합의 강점
+
+**선택 이유:**
+
+| 측면             | shadcn/ui + Radix UI      | MUI / Ant Design     |
+| ---------------- | ------------------------- | -------------------- |
+| **커스터마이징** | 소스 코드 직접 수정 가능  | 테마 시스템에 제한됨 |
+| **번들 크기**    | 사용하는 컴포넌트만 포함  | 전체 라이브러리 포함 |
+| **접근성**       | Radix UI의 ARIA 자동 적용 | 수동 구현 필요       |
+| **학습 곡선**    | Tailwind 지식 필요        | 독자적 API 학습      |
+| **의존성**       | 최소화 (Radix + React)    | 무거운 의존성 트리   |
+
+**Radix UI 접근성 기능:**
+
+```typescript
+// DeletePostModal 예시
+<Dialog
+  open={isOpen}
+  onOpenChange={onClose}  // ESC 키 자동 처리
+>
+  <DialogContent>  {/* role="dialog", aria-modal="true" 자동 추가 */}
+    <DialogTitle>  {/* aria-labelledby 자동 연결 */}
+      Delete Post
+    </DialogTitle>
+    <DialogDescription>  {/* aria-describedby 자동 연결 */}
+      This action cannot be undone.
+    </DialogDescription>
+  </DialogContent>
+</Dialog>
+
+// 생성된 HTML (자동):
+// <div role="dialog" aria-modal="true" aria-labelledby="..." aria-describedby="...">
+```
+
+**장점:**
+
+- 키보드 네비게이션 자동 지원 (Tab, Arrow keys)
+- 스크린 리더 호환성
+- Focus 관리 (모달 열릴 때 자동 focus)
+
+### 10.2 사용자 경험 개선 기법
+
+**1. Optimistic UI Updates**
+
+```typescript
+// 서버 응답 전에 UI 먼저 업데이트
+const mutation = useMutation({
+  mutationFn: createPost,
+  onMutate: async (newPost) => {
+    // 낙관적 업데이트: 즉시 UI에 반영
+    queryClient.setQueryData(['posts'], (old) => [newPost, ...old])
+  },
+  onError: (err, newPost, context) => {
+    // 실패 시 롤백
+    queryClient.setQueryData(['posts'], context.previousPosts)
+  }
+})
+```
+
+**2. Intersection Observer를 활용한 끊김 없는 스크롤**
+
+```typescript
+// Sentinel 요소가 화면에 보이면 다음 페이지 로드
+const { ref } = useInView({
+  threshold: 0.1, // 10%만 보여도 트리거
+  onChange: (inView) => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
+    }
+  }
+})
+```
+
+**3. 시각적 일관성 - Design Tokens**
+
+```css
+/* index.css - CSS 변수로 테마 정의 */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 47.4% 11.2%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --destructive: 0 84.2% 60.2%;
+  /* ... */
+}
+
+.dark {
+  --background: 224 71% 4%;
+  --foreground: 213 31% 91%;
+  /* ... */
+}
+```
+
+**4. 반응형 디자인 - Mobile First**
+
+```typescript
+// Tailwind의 반응형 유틸리티
+<div className="
+  grid
+  grid-cols-1      /* 모바일: 1열 */
+  md:grid-cols-2   /* 태블릿: 2열 */
+  lg:grid-cols-3   /* 데스크톱: 3열 */
+  gap-4
+">
+  {/* 차트 컴포넌트들 */}
+</div>
+```
+
+### 10.3 성능과 UX의 균형
+
+**로딩 상태 표시:**
+
+```typescript
+// LoadingSpinner로 사용자에게 피드백
+{isLoading ? (
+  <LoadingSpinner />
+) : (
+  <PostsTable posts={posts} />
+)}
+
+// Skeleton UI (향후 개선)
+{isLoading ? (
+  <PostCardSkeleton count={5} />
+) : (
+  <PostList posts={posts} />
+)}
+```
+
+**에러 처리 UX:**
+
+```typescript
+// 사용자 친화적 에러 메시지
+if (isError) {
+  return (
+    <div className="text-center py-12">
+      <p className="text-destructive">
+        Failed to load posts. Please try again.
+      </p>
+      <Button onClick={() => refetch()}>Retry</Button>
+    </div>
+  );
+}
+```
+
+---
+
+## 11. CI/CD 및 배포 전략
+
+### 11.1 배포 환경 고려사항
+
+이 프로젝트는 다음과 같은 배포 전략을 염두에 두고 설계되었습니다:
+
+**1. Vercel (Next.js App)**
+
+```typescript
+// next.config.ts
+export default {
+  output: 'standalone', // 최적화된 도커 이미지
+  experimental: {
+    outputFileTracingRoot: path.join(__dirname, '../../') // Monorepo 지원
+  }
+}
+```
+
+**장점:**
+
+- Edge Runtime 활용 (빠른 응답 속도)
+- Automatic HTTPS
+- Preview Deployments (PR마다 배포 URL 생성)
+
+**2. Netlify/Vercel (React App)**
+
+```bash
+# vite.config.ts
+export default defineConfig({
+  build: {
+    outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          charts: ['recharts']  // 차트 라이브러리 분리
+        }
+      }
+    }
+  }
+});
+```
+
+**3. 공유 패키지 전략**
+
+**옵션 A: Monorepo 유지**
+
+- Vercel/Netlify가 workspaces 지원
+- 가장 간단한 방법
+- 단점: 각 앱이 모든 패키지 소스 포함
+
+**옵션 B: Private NPM Registry**
+
+```bash
+# packages 빌드 및 퍼블리시
+pnpm --filter ./packages/** build
+pnpm --filter ./packages/** publish --access restricted
+```
+
+### 11.2 환경 변수 관리
+
+```typescript
+// apps/react-app/.env
+VITE_API_BASE_URL=https://api.production.com
+
+// apps/next-app/.env.production
+NEXT_PUBLIC_API_URL=https://api.production.com
+API_SECRET_KEY=xxx  // 서버 전용 (클라이언트 노출 X)
+```
+
+### 11.3 성능 모니터링
+
+**Lighthouse 점수 목표:**
+
+| 메트릭         | 목표          | 현재                 |
+| -------------- | ------------- | -------------------- |
+| Performance    | 90+           | 측정 필요            |
+| Accessibility  | 100           | Radix UI 덕분에 높음 |
+| Best Practices | 95+           | 측정 필요            |
+| SEO            | 90+ (Next.js) | SSR로 유리           |
+
+**향후 개선 계획:**
+
+- Lighthouse CI 통합 (PR마다 성능 체크)
+- Web Vitals 모니터링 (CLS, LCP, FID)
+- Sentry로 에러 트래킹
+
+---
+
 ## 📚 추가 학습 자료
 
 ### React Query Deep Dive
