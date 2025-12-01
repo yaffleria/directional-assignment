@@ -71,13 +71,6 @@ pnpm lint
 pnpm --filter react-app test:e2e
 ```
 
-### 테스트 계정
-
-```
-이메일: jungmin.ji@icloud.com
-비밀번호: Q5kL7wPnQ6
-```
-
 <br />
 
 ---
