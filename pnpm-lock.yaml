@@ -20,9 +20,18 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.67.0(react@19.2.0))
+      '@repo/api':
+        specifier: workspace:*
+        version: link:../../packages/api
       '@repo/components':
         specifier: workspace:*
         version: link:../../packages/components
+      '@repo/hooks':
+        specifier: workspace:*
+        version: link:../../packages/hooks
+      '@repo/schema':
+        specifier: workspace:*
+        version: link:../../packages/schema
       '@repo/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -105,9 +114,18 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.67.0(react@19.2.0))
+      '@repo/api':
+        specifier: workspace:*
+        version: link:../../packages/api
       '@repo/components':
         specifier: workspace:*
         version: link:../../packages/components
+      '@repo/hooks':
+        specifier: workspace:*
+        version: link:../../packages/hooks
+      '@repo/schema':
+        specifier: workspace:*
+        version: link:../../packages/schema
       '@repo/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -200,6 +218,16 @@ importers:
         specifier: ^7.2.4
         version: 7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.1)
 
+  packages/api:
+    dependencies:
+      axios:
+        specifier: ^1.13.2
+        version: 1.13.2
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+
   packages/components:
     dependencies:
       '@radix-ui/react-dialog':
@@ -220,6 +248,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.7)(react@19.2.0)
+      '@repo/api':
+        specifier: workspace:*
+        version: link:../api
       '@repo/utils':
         specifier: workspace:*
         version: link:../utils
@@ -255,8 +286,40 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/hooks:
+    dependencies:
+      '@repo/api':
+        specifier: workspace:*
+        version: link:../api
+      '@tanstack/react-query':
+        specifier: ^5.90.11
+        version: 5.90.11(react@19.2.0)
+      react:
+        specifier: ^19.2.0
+        version: 19.2.0
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.5
+        version: 19.2.7
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/schema:
+    dependencies:
+      zod:
+        specifier: ^4.1.13
+        version: 4.1.13
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   packages/utils:
     dependencies:
+      '@repo/api':
+        specifier: workspace:*
+        version: link:../api
       clsx:
         specifier: ^2.1.0
         version: 2.1.1

@@ -3,14 +3,11 @@ import { api } from '../api/client'
 import { useInView } from 'react-intersection-observer'
 import { useNavigate } from 'react-router-dom'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import type { Category, SortField, SortOrder } from '../api/data-contracts'
-import { Button, Input, LoadingSpinner } from '@repo/components'
-import { useDeletePost } from '../hooks/useDeletePost'
+import type { Category, SortField, SortOrder } from '@repo/api'
+import { Button, Input, LoadingSpinner, PostsTable, DeletePostModal } from '@repo/components'
+import { useDeletePost, useModal } from '@repo/hooks'
 import { Search, Plus, LogOut } from 'lucide-react'
-import { useModal } from '../hooks/useModal'
 import { PageHeader } from '../components/layout/PageHeader/PageHeader'
-import { PostsTable } from '../components/PostsTable/PostsTable'
-import { DeletePostModal } from '../components/DeletePostModal/DeletePostModal'
 
 export default function PostsListPage() {
   const navigate = useNavigate()
@@ -58,7 +55,7 @@ export default function PostsListPage() {
     }
   })
 
-  const { handleDelete, isPending: isDeleting } = useDeletePost()
+  const { handleDelete, isPending: isDeleting } = useDeletePost({ api })
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -178,6 +175,7 @@ export default function PostsListPage() {
               posts={posts}
               onDelete={deleteModal.open}
               isDeleting={isDeleting}
+              onNavigate={(path) => navigate(path)}
             />
 
             {/* Infinite Scroll Trigger */}

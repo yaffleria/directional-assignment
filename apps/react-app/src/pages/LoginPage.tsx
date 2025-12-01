@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { loginSchema, type LoginFormData } from '../schema/login.schema'
+import { loginSchema, type LoginFormData } from '@repo/schema'
 import { Button } from '@repo/components'
 import { Input } from '@repo/components'
 import { Label } from '@repo/components'

@@ -1,17 +1,20 @@
 {
-  "name": "@repo/utils",
+  "name": "@repo/hooks",
   "version": "0.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc"
   },
+  "peerDependencies": {
+    "react": "^19.2.0"
+  },
   "dependencies": {
-    "clsx": "^2.1.0",
-    "tailwind-merge": "^2.2.0",
+    "@tanstack/react-query": "^5.90.11",
     "@repo/api": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@types/react": "^19.2.5"
   }
 }

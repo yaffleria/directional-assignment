@@ -5,9 +5,7 @@ import { api } from '../api/client'
 import { Button } from '@repo/components'
 import { PageHeader } from '../components/layout/PageHeader/PageHeader'
 import { ArrowLeft } from 'lucide-react'
-import { BarDonutView } from '../components/dashboard/BarDonutView'
-import { StackedView } from '../components/dashboard/StackedView'
-import { DualAxisView } from '../components/dashboard/DualAxisView'
+import { BarDonutView, StackedView, DualAxisView } from '@repo/components'
 
 const COLORS = {
   primary: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'],

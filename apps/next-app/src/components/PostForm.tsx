@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { postSchema, type PostFormData } from '../schema/posts.schema'
+import { postSchema, type PostFormData } from '@repo/schema'
 import { api } from '../api/client'
 import {
   Button,
@@ -19,7 +19,7 @@ import {
 } from '@repo/components'
 import { PageHeader } from './layout/PageHeader/PageHeader'
 import { ArrowLeft } from 'lucide-react'
-import type { Category, Post } from '../api/data-contracts'
+import type { Category, Post } from '@repo/api'
 
 interface PostFormProps {
   initialData?: Post

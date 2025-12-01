@@ -6,10 +6,7 @@
     "strict": true,
     "declaration": true,
     "skipLibCheck": true,
-    "jsx": "react-jsx",
-    "outDir": "dist",
-    "noEmit": false,
-    "allowImportingTsExtensions": false
+    "outDir": "dist"
   },
   "include": ["src"]
 }

@@ -1,7 +1,7 @@
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query'
 import PostsListClient from './PostsListClient'
 import { getServerApi } from '../../api/client'
-import { SortField, SortOrder } from '../../api/data-contracts'
+import { SortField, SortOrder } from '@repo/api'
 
 export default async function PostsPage() {
   const queryClient = new QueryClient()

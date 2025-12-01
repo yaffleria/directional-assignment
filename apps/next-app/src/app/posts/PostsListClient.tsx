@@ -5,14 +5,11 @@ import { api, setAuthToken } from '../../api/client'
 import { useInView } from 'react-intersection-observer'
 import { useRouter } from 'next/navigation'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import type { Category, SortField, SortOrder } from '../../api/data-contracts'
-import { Button, Input, LoadingSpinner } from '@repo/components'
-import { useDeletePost } from '../../hooks/useDeletePost'
+import type { Category, SortField, SortOrder } from '@repo/api'
+import { Button, Input, LoadingSpinner, PostsTable, DeletePostModal } from '@repo/components'
+import { useDeletePost, useModal } from '@repo/hooks'
 import { Search, Plus, LogOut } from 'lucide-react'
-import { useModal } from '../../hooks/useModal'
 import { PageHeader } from '../../components/layout/PageHeader/PageHeader'
-import { PostsTable } from '../../components/PostsTable/PostsTable'
-import { DeletePostModal } from '../../components/DeletePostModal/DeletePostModal'
 
 export default function PostsListClient() {
   const router = useRouter()
@@ -50,7 +47,7 @@ export default function PostsListClient() {
     }
   })
 
-  const { handleDelete, isPending: isDeleting } = useDeletePost()
+  const { handleDelete, isPending: isDeleting } = useDeletePost({ api })
 
   const handleLogout = () => {
     setAuthToken(null)
@@ -166,6 +163,7 @@ export default function PostsListClient() {
               posts={posts}
               onDelete={deleteModal.open}
               isDeleting={isDeleting}
+              onNavigate={(path) => router.push(path)}
             />
 
             {hasNextPage && (

@@ -1,14 +1,13 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Button, CategoryBadge, Tag } from '@repo/components'
-import { useDeletePost } from '../../../hooks/useDeletePost'
-import { formatDateTime } from '../../../lib/date'
+import { api } from '../../../api/client'
+import { Button, CategoryBadge, Tag, DeletePostModal } from '@repo/components'
+import { useDeletePost, useModal } from '@repo/hooks'
+import { formatDateTime } from '@repo/utils'
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
-import { useModal } from '../../../hooks/useModal'
 import { PageHeader } from '../../../components/layout/PageHeader/PageHeader'
-import { DeletePostModal } from '../../../components/DeletePostModal/DeletePostModal'
-import type { Post } from '../../../api/data-contracts'
+import type { Post } from '@repo/api'
 
 interface PostDetailClientProps {
   post: Post
@@ -19,7 +18,8 @@ export default function PostDetailClient({ post }: PostDetailClientProps) {
   const deleteModal = useModal()
 
   const { handleDelete, isPending: isDeleting } = useDeletePost({
-    redirectTo: '/posts'
+    api,
+    onSuccess: () => router.push('/posts')
   })
 
   return (

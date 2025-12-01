@@ -1,9 +1,6 @@
-import axios, { AxiosInstance } from 'axios'
+import axios from 'axios'
 import Cookies from 'js-cookie'
-import { Auth } from './Auth'
-import { Posts } from './Posts'
-import { Mock } from './Mock'
-import { Health } from './Health'
+import { API } from '@repo/api'
 
 // Base configuration
 const CLIENT_BASE_URL = '/api'
@@ -30,28 +27,6 @@ if (typeof window !== 'undefined') {
   const storedToken = Cookies.get('token')
   if (storedToken) {
     setAuthToken(storedToken)
-  }
-}
-
-export class API {
-  public auth: Auth
-  public posts: Posts
-  public mock: Mock
-  public health: Health
-  public instance: AxiosInstance
-
-  constructor(instance: AxiosInstance, baseURL: string) {
-    this.instance = instance
-
-    this.auth = new Auth({ baseURL })
-    this.posts = new Posts({ baseURL })
-    this.mock = new Mock({ baseURL })
-    this.health = new Health({ baseURL })
-
-    this.auth.instance = instance
-    this.posts.instance = instance
-    this.mock.instance = instance
-    this.health.instance = instance
   }
 }
 

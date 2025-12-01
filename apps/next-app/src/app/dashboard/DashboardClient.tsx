@@ -5,9 +5,7 @@ import { PageHeader } from '../../components/layout/PageHeader/PageHeader'
 import { Button } from '@repo/components'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { BarDonutView } from '../../components/dashboard/BarDonutView'
-import { StackedView } from '../../components/dashboard/StackedView'
-import { DualAxisView } from '../../components/dashboard/DualAxisView'
+import { BarDonutView, StackedView, DualAxisView } from '@repo/components'
 import type {
   WeeklyMoodTrendResponse,
   CoffeeConsumptionResponse,
@@ -15,7 +13,7 @@ import type {
   SnackImpactResponse,
   WeeklyWorkoutTrendResponse,
   PopularSnackBrandsResponse
-} from '../../api/data-contracts'
+} from '@repo/api'
 
 interface DashboardClientProps {
   weeklyMood: WeeklyMoodTrendResponse

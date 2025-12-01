@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { postSchema, type PostFormData } from '../schema/posts.schema'
+import { postSchema, type PostFormData } from '@repo/schema'
 import { api } from '../api/client'
 import { Button } from '@repo/components'
 import { Input } from '@repo/components'
@@ -11,7 +11,7 @@ import { Textarea } from '@repo/components'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/components'
 import { PageHeader } from '../components/layout/PageHeader/PageHeader'
 import { ArrowLeft } from 'lucide-react'
-import type { Category } from '../api/data-contracts'
+import type { Category } from '@repo/api'
 
 export default function PostFormPage() {
   const { id } = useParams<{ id: string }>()

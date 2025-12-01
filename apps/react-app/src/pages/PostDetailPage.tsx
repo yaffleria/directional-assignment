@@ -1,13 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../api/client'
-import { Button, LoadingPage, CategoryBadge, Tag } from '@repo/components'
-import { useDeletePost } from '../hooks/useDeletePost'
-import { formatDateTime } from '../lib/date'
+import { Button, LoadingPage, CategoryBadge, Tag, DeletePostModal } from '@repo/components'
+import { useDeletePost, useModal } from '@repo/hooks'
+import { formatDateTime } from '@repo/utils'
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
-import { useModal } from '../hooks/useModal'
 import { PageHeader } from '../components/layout/PageHeader/PageHeader'
-import { DeletePostModal } from '../components/DeletePostModal/DeletePostModal'
 
 export default function PostDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -25,7 +23,8 @@ export default function PostDetailPage() {
   })
 
   const { handleDelete, isPending: isDeleting } = useDeletePost({
-    redirectTo: '/posts'
+    api,
+    onSuccess: () => navigate('/posts')
   })
 
   if (isLoading) {
