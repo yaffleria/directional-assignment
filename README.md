@@ -5,6 +5,14 @@
 
 <br />
 
+## 🔗 Live Demo
+
+- **React App**: [https://directional-assignment-ten.vercel.app](https://directional-assignment-ten.vercel.app)
+  - _SPA 라우팅 설정이 적용되어 정상 동작합니다._
+- **Next.js App**: [https://directional-assignment-next-app-c9s.vercel.app](https://directional-assignment-next-app-c9s.vercel.app)
+
+<br />
+
 ## 🎯 프로젝트 개요
 
 이 프로젝트는 **모던 웹 개발의 Best Practice**를 지향하여 설계한 게시판 및 대시보드 시스템입니다.
