@@ -9,6 +9,7 @@
 
 이 프로젝트는 **모던 웹 개발의 Best Practice**를 적용한 게시판 및 대시보드 시스템입니다.
 pnpm Workspace를 활용한 모노레포 구조로 설계되어, **재사용성**과 **확장성**을 극대화했습니다.
+Antigravity IDE + Gemini3-pro + Claude Sonet 4.5를 활용하였습니다.
 
 ### 주요 특징
 
@@ -371,29 +372,6 @@ pnpm --filter react-app test:e2e:ui
 - [shadcn/ui](https://ui.shadcn.com/) - 컴포넌트 라이브러리
 - [pnpm Workspace](https://pnpm.io/workspaces) - 모노레포 관리
 - [Recharts](https://recharts.org/) - 차트 라이브러리
-
-<br />
-
----
-
-## 🚧 향후 개선 계획
-
-- [ ] Storybook 통합 - 컴포넌트 문서화
-- [ ] Unit Test - Vitest + React Testing Library
-- [ ] Lighthouse CI - 성능 모니터링
-- [ ] Sentry - 에러 트래킹
-- [ ] GitHub Actions - 자동화된 CI/CD
-
-<br />
-
----
-
-## 👤 개발자
-
-**지정민** (Jungmin Ji)
-
-- Email: jungmin.ji@icloud.com
-- GitHub: [Your GitHub]
 
 <br />
 
